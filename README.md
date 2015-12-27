@@ -21,8 +21,8 @@ data created by the Data Track will be destroyed.
 See [releases](https://github.com/pylls/datatrack/releases).
 
 ## Privacy and the Data Track
-Please note that the Data Track is a tool you run on your own device (Windows,
-  OS X and Linux 64-bit are supported) that uses your browser to show its user
+Please note that the Data Track is a tool you run on your own device (Windows 10,
+  OS X and Linux x64 are supported) that uses your browser to show its user
   interface (Firefox and Chrome tested). We send no data over the network, and
   only retrieve tiles (images) loaded from [OpenStreetMap](http://www.openstreetmap.org/)
   if you use the map view. We enforce this limitation with a [Content Security Policy](https://en.wikipedia.org/wiki/Content_Security_Policy).
