@@ -39,10 +39,10 @@ The Data Track is developed by [Computer Science](https://www.kau.se/cs) at
 EU FP7 research project [A4Cloud](http://www.a4cloud.eu/), grant agreement no.
 317550.
 
-## Build From source
-Install [Go](https://golang.org). Clone this repo:
+## Build from source
+Install [Go](https://golang.org). Clone this repo and make it your `$GOPATH`:
 
-    $ go get github.com/pylls/datatrack/
+    $ git clone https://github.com/pylls/datatrack
 
 Then build:
 
