@@ -21,7 +21,7 @@ _testmain.go
 
 *.exe
 *.test
-*.prof
 
-pkg/
-bin/
+
+*.pem
+.DS_Store

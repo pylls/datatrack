@@ -1,0 +1,159 @@
+img.style {
+	width: 20px;
+	height: 20px;
+}
+
+#map {
+	height: 600px;
+	display: none;
+	position: absolute;
+	top: 150px;
+	left: 20px;
+	right: 20px;
+	bottom: 20px;
+	border: solid 3px #654;
+	z-index: -5;
+}
+
+#mapOptions {
+	text-align: center;
+	font-size: 20px;
+}
+
+.dtpopup {
+	width: 220px;
+}
+
+.dtpopvel, .dtpopacc, .dtpophead, .dtpopalt {
+	display: table-cell;
+}
+
+.dtpopact {
+	margin-top: 3px;
+	display: block;
+}
+
+.activityheader {
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	padding: 0px;
+	margin-top: 10px;
+	border-style: solid;
+	border-width: 1px;
+	word-break: normal;
+	border-color: #fce94f;
+	color: #000;
+	background-color: #ffd600;
+	text-align: center;
+	font-weight: bold;
+}
+
+.dtpopstyle {
+	font-family: Arial, sans-serif;
+	font-size: 10px;
+	padding: 0px;
+	word-break: normal;
+	text-align: center;
+}
+
+.dtpopcord {
+	background-color: #ffd600;
+	margin-bottom: 10px;
+}
+
+.dtpopstyleact {
+	display: run-in;
+}
+
+.leaflet-popup-content {
+	padding-right: 15px;
+	max-width: 270px;
+	max-height: 200px; ! important;
+	overflow-y: auto; ! important;
+	overflow-x: hidden;
+}
+
+.dtpoptime {
+	text-align: center;
+	font-weight: bold;
+}
+
+.funkyradio label {
+	width: 120px;
+	border-radius: 6px;
+	border: 1px solid #D1D3D4;
+	font-weight: normal;
+	font-size: 12px;
+}
+
+.funkyradio input[type="radio"]:empty {
+	display: none;
+}
+
+.funkyradio input[type="radio"]:empty ~ label {
+	position: relative;
+	line-height: 2em;
+	text-indent: 2em;
+	margin: 0em;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.funkyradio input[type="radio"]:empty ~ label:before {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	content: '';
+	width: 2.5em;
+	background: #D1D3D4;
+	border-radius: 3px 0 0 3px;
+}
+
+.funkyradio input[type="radio"]:hover:not (:checked ) ~ label:before {
+	text-indent: .8em;
+	color: #d3d7cf;
+}
+
+.funkyradio input[type="radio"]:checked ~ label {
+	color: #000000;
+	font-weight: bold;
+}
+
+.funkyradio input[type="radio"]:checked ~ label:before {
+	content: '\2714';
+	text-indent: .8em;
+	color: #000000;
+	background-color: #ccc;
+}
+
+.funkyradio-primary input[type="radio"]:checked ~ label:before {
+	color: #000000;
+	background-color: #ffd600;
+}
+
+.fromleft {
+	padding-left: 150px;
+}
+
+@media only screen and (min-width: 20em) {
+	.fromleft {
+	padding-left: 0px;
+}
+
+}
+/* 328px */
+@media only screen and (min-width: 48em) {
+	.fromleft {
+	padding-left: 0px;
+}
+}
+/* 768px */
+@media only screen and (min-width: 56.25em) {
+		.fromleft {
+	padding-left: 150px;
+}
+}

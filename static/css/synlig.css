@@ -1,0 +1,13 @@
+#loading {
+	display: none;
+	width: 240px;
+	height: 240px;
+	margin: 0 auto;
+	background: url(../../img/loading.gif) no-repeat center center;	
+}
+
+.loadingMsg {
+	width: 100%;
+	text-align: center;
+	background-color: #f2f2f2;
+}

@@ -1,0 +1,149 @@
+
+/**
+ * 	UBUNTU
+ */
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: bold;
+  src: local('Ubuntu'), url('fonts/Ubuntu/Ubuntu-Bold.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: italic;
+  font-weight: bold;
+  src: local('Ubuntu'), url('fonts/Ubuntu/Ubuntu-BoldItalic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: italic;
+  font-weight: normal;
+  src: local('Ubuntu'), url('fonts/Ubuntu/Ubuntu-Italic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: lighter;
+  src: local('Ubuntu'), url('fonts/Ubuntu/Ubuntu-Light.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: italic;
+  font-weight: 300;
+  src: local('Ubuntu'), url('fonts/Ubuntu/Ubuntu-LightItalic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu'), url('fonts/Ubuntu/Ubuntu-Medium.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Ubuntu'), url('fonts/Ubuntu/Ubuntu-MediumItalic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Ubuntu'), url('fonts/Ubuntu/Ubuntu-Regular.ttf') format('opentype');
+}
+
+
+/**
+ * 	DidactGothic
+ */
+
+@font-face {
+  font-family: 'Didact Gothic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Didact Gothic'), url('fonts/Didact_Gothic/DidactGothic.ttf') format('opentype');
+}
+
+
+/**
+ * 	OpenSans
+ */
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: bold;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-Bold.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: bold;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-BoldItalic.ttf') format('opentype');
+}
+
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: bolder;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-ExtaBold.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: bolder;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-ExtaBoldItalic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: normal;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-Italic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: lighter;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-Light.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: lighter;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-LightItalic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-Regular.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 600;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-Semibold.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 600;
+  src: local('Open Sans'), url('fonts/OpenSans/OpenSans-SemiboldItalic.ttf') format('opentype');
+}
+

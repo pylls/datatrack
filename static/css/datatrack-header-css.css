@@ -1,0 +1,136 @@
+header .navbar-default {
+	font-size: 14px;
+	background-color: rgba(255, 214, 0, 1);
+}
+
+header .navbar-default .nav-pills>li>a {
+	color: rgba(119, 119, 119, 1);
+	background-color: rgba(248, 248, 248, 0);
+}
+
+header .navbar-default .nav-pills>li>a:hover, header .navbar-default .nav-pills>li>a:focus
+	{
+	color: rgba(51, 51, 51, 1);
+	background-color: rgba(255, 241, 161, 0.5);
+}
+
+header .navbar-default .nav-pills>.active>a, header .navbar-default .nav-pills>.active>a:hover,
+	header .navbar-default .nav-pills>.active>a:focus {
+	color: rgba(51, 51, 51, 1);
+	background-color: rgba(255, 241, 161, 1);
+}
+
+header .navbar-default .navbar-toggle {
+	border-color: #ffffff;
+}
+
+header .navbar-default .navbar-toggle:hover, header .navbar-default .navbar-toggle:focus
+	{
+	background-color: #ffffff;
+}
+
+header .navbar-default .navbar-toggle .icon-bar {
+	background-color: #ffffff;
+}
+
+header .navbar-default .navbar-toggle:hover .icon-bar, header .navbar-default .navbar-toggle:focus .icon-bar
+	{
+	background-color: #ffd600;
+}
+
+body {
+	background-color: #f2f2f2;
+}
+
+.imgindex {
+	width: 250px;
+	height: 150px;
+}
+
+.imgindex2 {
+	width: 30px;
+	height: 30px;
+	opacity: 0.6;
+}
+
+.textcolor {
+	color: #FE9A2E;
+}
+
+header .navbar-default img {
+	max-width: 100%;
+	max-height: 65px;
+	text-decoration: none;
+}
+
+@media only screen and (min-width: 20em) {
+	header .navbar-default  img {
+		max-width: 100%;
+		max-height: 45px;
+	}
+}
+/* 328px */
+@media only screen and (min-width: 48em) {
+	header .navbar-default  img {
+		max-width: 100%;
+		max-height: 55px;
+	}
+}
+/* 768px */
+@media only screen and (min-width: 56.25em) {
+	header .navbar-default  img {
+		max-width: 100%;
+		max-height: 65px;
+	}
+}
+/* 900px */
+header .headerfont {
+	color: #000;
+	font-weight: bold;
+	font-size: medium;
+	opacity: 0.7;
+	margin-right: 10px;
+	font-family: "Lato",Arial;
+}
+
+a.logotop {
+	color: #FFFFFF;
+	text-decoration: none;
+	overflow: hidden;
+}
+
+.navbar-default {
+	background-color: #ececec;
+}
+
+.back-to-top {
+	width: 80px;
+	height: 80px;
+	position: fixed;
+	bottom: 6em;
+	right: 0px;
+	text-decoration: none;
+	color: #000000;
+	background-color: rgba(255, 214, 0, 1);
+	font-size: 12px;
+	padding: 1em;
+	display: none;
+	background: url("../../img/arrowtop.png") no-repeat center;
+	-webkit-border-radius : 50%;
+	-moz-border-radius: 50%;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	z-index: 9000;
+}
+
+.back-to-top:hover {
+	background-color: rgba(255, 214, 0, 1);
+}
+
+.bottom-container {
+	margin-top: 5px;
+}
+
+.bottom-container img {
+	height: 50px;
+}

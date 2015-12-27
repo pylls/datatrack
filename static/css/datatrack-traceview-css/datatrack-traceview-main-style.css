@@ -1,0 +1,263 @@
+/*
+ * main css style for traceveiw
+ */
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;	
+}
+
+.node {
+	stroke: transparent;
+	stroke-width: 4.5px;
+}
+
+.node circle {
+	stroke-width: 1.5px;
+	stroke: #000;
+}
+
+/* If the mouse is NOT hovered over the node, display no text */
+.node:not(:hover) .node-text {
+	display: none;
+}
+
+.showme {
+	display: none;
+}
+
+.node:not(:hover) .node-circle {
+	display: none;
+}
+
+/* If the mouse is hovered over the node */
+.node:hover .node-circle {
+	stroke-width: 1px;
+	transform: scale(1);
+}
+
+.attunique:hover .showme {
+	display: block;
+	stroke-width: 1px;
+}
+
+.hoverme:hover .showme {
+	display: block;
+	stroke-width: 1px;
+}
+
+
+.node-circle {
+	transition: transform 0.25s ease-in-out;
+}
+
+
+#svgdiv {
+	height: 100%;
+}
+
+marker#start {
+	fill: #ffd600;   /*#0000CC;*/
+	stroke-width: 0.5px;
+}
+marker#mid {
+	fill: #0000CC;
+	stroke-width: 0.5px;
+}
+
+marker#end {
+	fill: #0000CC;
+	stroke-width: 0.5px;
+}
+marker#endorg {
+	fill: #0000CC;
+	stroke-width: 0.5px;
+}
+.dividing-text {
+	font-family: 'Didact Gothic', sans-serif;
+	font-size: 20px;
+	color: #bfbfbf;
+	opacity : 0.5;
+}
+
+.dividing-line {
+	color: #bfbfbf;
+	stroke: #bfbfbf;
+	stroke-width: 1px;
+	pointer-events: none;
+	opacity :1;
+}
+
+path.pathlink 
+{
+	stroke: #2e3436;
+	stroke-width: 0.6px;
+	fill: none;
+	opacity : 0.7;
+	pointer-events: none;
+}
+.cloudhover:hover
+{
+    cursor:pointer;
+    color : #2121bb;
+   
+}
+/* Overriding bootstrap to be able to display the SVG in the middle of the page
+ * (Got recommendation on how to center SVG here: 
+ * http://stackoverflow.com/questions/8639383/how-do-i-center-an-svg-in-a-div)
+ */
+/*svg:not (:root ) {
+	overflow: hidden;
+	display: block;
+	margin: auto;
+}*/
+
+table.attunique, table.attdbl, table.orgT , table.attmodal{
+	font-family: "Trebuchet MS", sans-serif;
+	font-size: 12px;
+	line-height: 1.5em;
+	font-style: normal;
+	border-collapse: separate;
+	width: 100%;
+}
+
+.attdbl tbody th {
+	color: #4d4d4d;
+	border: 1px solid #e5e5e5;
+	padding: 0px 10px;
+	text-align: center;
+	-moz-border-radius: 5px 5px 5px 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background-color:#F4F4F8;
+}
+
+.attdbl tbody td {
+	padding: 5px;
+	text-align: center;
+	background-color:#fffff;
+	border: 1px solid #e5e5e5;
+	color: #161616;
+}
+
+.attunique tbody th {
+	color: #a1a1a1;
+	border: 1px solid #e5e5e5;
+	padding: 0px 10px;
+	text-align: center;
+	-moz-border-radius: 5px 5px 5px 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+ 	background-color:#fffff;
+
+}
+
+.attunique tbody td {
+	padding: 5px;
+	text-align: center;
+	color: #161616;
+	background-color:#fffff;
+
+}
+
+.orgT tbody td, .orgT tbody th {
+	padding: 5px;
+	text-align: justify;
+	color: #525252;
+	border: 1px solid #e5e5e5;
+	-moz-border-radius: 2px 2px 2px 2px;
+	-webkit-border-top-left-radius: 2px;
+	-webkit-border-bottom-left-radius: 2px;
+	-webkit-border-top-right-radius: 2px;
+	-webkit-border-bottom-right-radius: 2px;
+	border-top-left-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
+	background-color:#fffff;
+	
+}
+
+.titleorg tbody td {
+	padding-right: 8px;
+	text-align: justify;
+	color: #312d2d;
+	-moz-border-radius: 2px 2px 2px 2px;
+	-webkit-border-top-left-radius: 2px;
+	-webkit-border-bottom-left-radius: 2px;
+	-webkit-border-top-right-radius: 2px;
+	-webkit-border-bottom-right-radius: 2px;
+	border-top-left-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
+}
+
+.attmodal tbody td 
+{
+	
+	font-size: 16px;
+	padding: 5px;
+	text-align: left;
+	background-color:#ffffff;
+	border: 0px solid #fff;
+	color: #464646;
+	
+}
+.orgT td:hover, .attunique td:hover, .attunique th:hover, .attdbl td:hover
+{
+	background: #E2E2E2; 
+}
+
+.attmodal td.hoverchange:hover
+{
+	background: #E2E2E2; 
+	
+}
+
+#second
+ {
+	width: 120px;
+}
+#lengthofrepeat 
+{
+	width: 120px;
+}
+
+.editimage:hover
+{
+	opacity : 0.5;
+	
+}
+.fontatt{
+	
+	opacity:1;
+	
+}
+.imageOrg{
+	
+	opacity:1;
+	
+}
+
+.logopopup{
+	
+	vertical-align:top ;
+	width:15px;
+	height:15px;
+	
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+<meta charset="UTF-8">
+<title>DataTrack - A Dashboard to keep track of your data</title>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<link rel="shortcut icon" href="../../img/logotop.png">
+
+
+<link href="../../css/synlig.css" rel="stylesheet">
+
+<!-- GLOBAL STYLES - Include these on every page. -->
+<link href="../../icons/font-awesome-4.3.0.2/css/font-awesome.min.css"
+	rel="stylesheet">
+<link href='../../css/fonts.css' rel="stylesheet" type="text/css">
+
+<!-- Timeline - Resource style the order is important-->
+<link rel="stylesheet"
+	href="../../css/datatrack-timeline-css/datatrack-timeline-main-style.css">
+<link href="../../css/plugins/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href='../../css/datatrack-header-css.css' rel="stylesheet"
+	type="text/css">
+
+</head>
+
+<body>
+	<div id="wrapper">
+		<header>
+			<nav class="navbar navbar-default">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed"
+							data-toggle="collapse"
+							data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+							<span class="sr-only">Toggle navigation</span> <span
+								class="icon-bar"></span> <span class="icon-bar"></span> <span
+								class="icon-bar"></span>
+						</button>
+						<a class="logotop" href="../../index.html"> <img alt="Brand"
+							src="../../img/logo.png"><span class="headerfont">
+								Data Track </span>
+						</a>
+					</div>
+					<div class="collapse navbar-collapse"
+						id="bs-example-navbar-collapse-1">
+						<ul class="nav nav-pills nav-justified colorset">
+							<li class="active"><a href="#"> <i
+									class="fa fa-clock-o fa-fw fa-2x"></i><br>Timeline
+							</a></li>
+							<li><a href="../map/"> <i
+									class="fa fa-globe fa-fw fa-2x"></i><br>Map
+							</a></li>
+							<li><a href="../trace/"> <i
+									class="fa fa-bullseye  fa-fw fa-2x"></i><br>Trace view
+							</a></li>
+						</ul>
+
+					</div>
+					<!-- /.navbar-collapse -->
+				</div>
+			</nav>
+		</header>
+		<!-- ********************* -->
+		<!-- begin MAIN PAGE CONTENT -->
+		<div id="main">
+
+			<div class="page-container-timeline">
+
+				<div class="cd-main-content">
+					<!-- Timeline -->
+					<section id="cd-timeline" class="cd-container cd-gallery"></section>
+				</div>
+				<!-- cd-main-content -->
+			</div>
+			<!-- page-container-timeline -->
+		</div>
+		<!-- main -->
+	</div>
+	<!-- #wrapper -->
+
+	<div id="loading" aria-hidden="true">
+		<div id="loadingSonic"></div>
+		<div class="loadingMsg">Loading, this might take some time...</div>
+	</div>
+
+	<div class="navbar navbar-default navbar-fixed-bottom">
+		<div class="container bottom-container">
+			<p class="pull-left textfoot">
+				<a href="https://www.kau.se/en" target="_blank"><img class="logofoot" src="../../img/logo.png" alt="Karlstad University"></a>
+				<a href="https://www.kau.se/en/cs" target="_blank">Computer Science</a> at
+				<a href="https://www.kau.se/en" target="_blank">Karlstad University</a>
+			</p>
+
+			<p class="pull-right">
+				Funded by <a href="http://www.a4cloud.eu/" target="_blank">A4Cloud</a> <a href="http://www.a4cloud.eu/" target="_blank"> <img
+					class="logofoot" src="../../img/logocloud.png" alt="a4cloud">
+				</a>
+
+			</p>
+		</div>
+	</div>
+
+	<a href="#" class="back-to-top"></a>
+
+	<!-- GLOBAL SCRIPTS -->
+	<script type="text/javascript"
+		src="../../js/plugins/jquery/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript"
+		src="../../js/plugins/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript"
+		src="../../js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+	<!-- HISRC Retina Images -->
+	<script type="text/javascript" src="../../js/plugins/hisrc/hisrc.js"></script>
+
+	<!-- THEME SCRIPTS -->
+	<script type="text/javascript" src="../../js/flex.js"></script>
+
+	<script type="text/javascript" src="../../js/sonic.js"></script>
+	<script type="text/javascript" src="../../js/loading.js"></script>
+
+
+	<!-- Timeline - Resource -->
+	<script type="text/javascript"
+		src="../../js/synlig-js/datatrack-timeline-js/datatrack-timeline-main.js"></script>
+	<!-- Scrolling -  Resource -->
+	<script type="text/javascript" src="../../js/infinitus.jquery.min.js"></script>
+</body>
+</html>
