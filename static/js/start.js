@@ -1,6 +1,7 @@
 $(document).ready(function() {
 	
-	var ifUploaded = false;
+	var ifUploadedGoogle = false;
+	var ifUploadedFacebook = false;
 	
 	$("#start").show();
 
@@ -8,9 +9,13 @@ $(document).ready(function() {
 		$('#toProcessing').prop('disabled', !($('#fileToUpload').val()));
 	});
 
-	$.get("/v1/disclosure/count", function(disclosure) {  //check if file has been uploaded
+	$.get("/v1/disclosure/toOrganization/Google/count", function(disclosure) {  //check if file has been uploaded
 		if(disclosure != 0)
-			ifUploaded  = true;
+			ifUploadedGoogle  = true;
+	});
+	$.get("/v1/disclosure/toOrganization/Facebook/count", function(disclosure) {  //check if file has been uploaded
+		if(disclosure != 0)
+			ifUploadedFacebook  = true;
 	});
 	
 	$("#back").click(function() {
@@ -22,7 +27,7 @@ $(document).ready(function() {
 	});
 
 	
-	function showToImport() {
+	function showToImport(ifUploaded) {
 		$("#import").toggleClass("hide showme");
 		if(!ifUploaded)
 		{
@@ -31,6 +36,7 @@ $(document).ready(function() {
 		}
 		else 
 		{
+			$("#textcomplete").toggleClass("hide showme");
 			$("#nextstep").click(function() {
 				$("#uploadpart").toggleClass("hide showme");
 				$("#import").toggleClass("hide showme");
@@ -44,14 +50,14 @@ $(document).ready(function() {
 		$("#importform").attr("action", "google");
 		$(".provider-name").text("Google");
 		$(".provider-data-name").text("Google Takeout");
-		showToImport();
+		showToImport(ifUploadedGoogle);
 	});
 	$("#to-import-facebook").click(function() {
 		$("#start").hide();
 		$("#importform").attr("action", "facebook");
 		$(".provider-name").text("Facebook");
 		$(".provider-data-name").text("Facebook data");
-		showToImport();
+		showToImport(ifUploadedFacebook);
 	});
 
 	$("#importform").submit(function(event) {
