@@ -22,8 +22,7 @@ $(document).ready(function() {
 	});
 
 	
-	$("#toImport").click(function() {
-		$("#start").hide();
+	function showToImport() {
 		$("#import").toggleClass("hide showme");
 		if(!ifUploaded)
 		{
@@ -32,17 +31,27 @@ $(document).ready(function() {
 		}
 		else 
 		{
-			var html ='<p>You have already uploaded your file.</p>' 
-						+'</br>' 
-						+'<button id="nextstep" type="button"	class="btn btn-primary btn-lg">Start Exploring</button>';	
-			
-			$("#textcomplete").html(html);
 			$("#nextstep").click(function() {
 				$("#uploadpart").toggleClass("hide showme");
 				$("#import").toggleClass("hide showme");
 				$("#done").toggleClass("hide showme");
 			});
 		}
+	}
+
+	$("#to-import-google").click(function() {
+		$("#start").hide();
+		$("#importform").attr("action", "google");
+		$(".provider-name").text("Google");
+		$(".provider-data-name").text("Google Takeout");
+		showToImport();
+	});
+	$("#to-import-facebook").click(function() {
+		$("#start").hide();
+		$("#importform").attr("action", "facebook");
+		$(".provider-name").text("Facebook");
+		$(".provider-data-name").text("Facebook data");
+		showToImport();
 	});
 
 	$("#importform").submit(function(event) {
@@ -55,7 +64,7 @@ $(document).ready(function() {
 		var formData = new FormData($(this)[0]);
 
 		$.ajax({
-			url: "/v1/google",
+			url: "/v1/" + $("#importform").attr("action"),
 			type: "POST",
 			data: formData,
 			success: function() {
@@ -73,7 +82,6 @@ $(document).ready(function() {
 			processData: false
 		});
 	});
-
 });
 
 function importComplete() {

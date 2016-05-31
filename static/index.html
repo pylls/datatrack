@@ -57,10 +57,10 @@
 								<!--  -->
 								<i class="fa fa-download fa-2x"></i>
 								<h2>First</h2>
-								<h4>Import your data from Google</h4>
-								<p class="text-muted">You can download your data from Google
+								<h4>Import your data from Google or Facebook</h4>
+								<p class="text-muted">You can download your data from Google or Facebook.
 									and upload it to Data Track. Then it is time to see what you
-									have disclosed to Google</p>
+									have disclosed to them.</p>
 
 							</div>
 						</div>
@@ -71,7 +71,7 @@
 								<h2>Second</h2>
 								<h4>Wait while the Data Track parses your data</h4>
 								<p class="text-muted">
-									Have you ever noticed you have bunch of data on Google?<span
+									Have you ever noticed you have bunch of data on Google and Facebook?<span
 										class="hint"> To preserve your privacy your data is
 										deleted from DataTrack database each time you close it</span>
 								</p>
@@ -93,10 +93,16 @@
 					</div>
 				</div>
 				<div class="container">
-					<div class="col-md-12 text-center scrollpoint sp-effect3">
+					<div class="col-md-6 text-center scrollpoint sp-effect3">
 						<p>
-							<br> <a class="btn btn-primary btn-lg" href="#import"
-								id="toImport" role="button">Let's get started!</a>
+							<br> <a class="btn btn-primary btn-lg" href="#import-google"
+								id="to-import-google" role="button">Import from Google</a>
+						</p>
+					</div>
+					<div class="col-md-6 text-center scrollpoint sp-effect3">
+						<p>
+							<br> <a class="btn btn-primary btn-lg" href="#import-facebook"
+								id="to-import-facebook" role="button">Import from Facebook</a>
 						</p>
 					</div>
 				</div>
@@ -110,9 +116,9 @@
 						<div class="col-md-12 ">
 							<div class="about-item scrollpoint sp-effect2">
 								<!--  -->
-								<h2>Here we help you import your data from Google.</h2>
+								<h2>Here we help you import your data from <span class="provider-name"></span>.</h2>
 								<div class="row">
-									<div class="col-md-4  classWithPad">
+									<div class="col-md-4 classWithPad">
 										<!-- normal -->
 										<div class="info">
 											<h2>
@@ -124,15 +130,15 @@
 											alt="first step">
 										<div class="info">
 											<br>
-											<p>You have to log in to your Google account.</p>
+											<p>You have to log in to your <span class="provider-name"></span> account.</p>
 										</div>
 										<!-- end normal -->
 									</div>
-									<div class="col-md-4  classWithPad">
+									<div class="col-md-4 classWithPad">
 										<div class="info">
 											<h2>
 												<img class="imgindex2" src="img/numbers-2-icon.png"
-													alt="first step"> Second Step
+													alt="second step"> Second Step
 											</h2>
 										</div>
 										<img class="imgindex" src="img/visualizations/first.png"
@@ -143,11 +149,11 @@
 												right corner.</p>
 										</div>
 									</div>
-									<div class="col-md-4  classWithPad">
+									<div class="col-md-4 classWithPad">
 										<div class="info">
 											<h2>
 												<img class="imgindex2" src="img/numbers-3-icon.png"
-													alt="first step"> Third Step
+													alt="third step"> Third Step
 											</h2>
 										</div>
 										<img class="imgindex" src="img/visualizations/second.png"
@@ -161,11 +167,11 @@
 									</div>
 								</div>
 								<div class="row">
-									<div class="col-md-4  classWithPad">
+									<div class="col-md-4 classWithPad">
 										<div class="info">
 											<h2>
 												<img class="imgindex2" src="img/numbers-4-icon.png"
-													alt="first step"> Forth Step
+													alt="fourth step"> Fourth Step
 											</h2>
 										</div>
 										<img class="imgindex" src="img/visualizations/third.png"
@@ -177,7 +183,7 @@
 										</div>
 										<!-- end normal -->
 									</div>
-									<div class="col-md-4  classWithPad">
+									<div class="col-md-4 classWithPad">
 										<div class="info">
 											<h2>
 												<img class="imgindex2" src="img/numbers-5-icon.png"
@@ -188,15 +194,15 @@
 											alt="first step">
 										<div class="info">
 											<br>
-											<p>Among all Google products just select "Location
+											<p>Among all <span class="provider-name"></span> products just select "Location
 												History".</p>
 										</div>
 									</div>
-									<div class="col-md-4  classWithPad">
+									<div class="col-md-4 classWithPad">
 										<div class="info">
 											<h2>
 												<img class="imgindex2" src="img/numbers-6-icon.png"
-													alt="first step"> Sixth Step
+													alt="sixth step"> Sixth Step
 											</h2>
 										</div>
 										<img class="imgindex" src="img/visualizations/fifth.png"
@@ -209,11 +215,15 @@
 									</div>
 								</div>
 								<br>
-								<div id="textcomplete" class="textcolor"></div>
+								<div id="textcomplete" class="hide textcolor">
+									<p>You have already uploaded your <span class="provider-data-name"></span> file.</p>
+									</br>
+									<button id="nextstep" type="button" class="btn btn-primary btn-lg">Start Exploring</button>
+								</div>
 								<div id="uploadpart" class="hide">
-									<form id="importform" method="post" action="#processing" enctype="multipart/form-data">
+									<form id="importform" method="post" action="google" enctype="multipart/form-data">
 										<label for="file"><span class="textcolor">Are
-												you ready? Select your Google Takeout zip-file:</span></label> <input
+												you ready? Select your <span class="provider-data-name"></span> zip-file:</span></label> <input
 											type="file" name="file" id="fileToUpload" /><br />
 										<button id="toProcessing" type="submit"
 											class="btn btn-primary btn-lg" disabled>Start
