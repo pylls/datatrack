@@ -2,9 +2,7 @@ package facebook
 
 import (
 	"bytes"
-	"datatrack/database"
-	"datatrack/model"
-	"datatrack/remote/google"
+	"datatrack/remote/facebook"
 	"fmt"
 	"net/http"
 	"strings"
@@ -32,34 +30,12 @@ func facebookHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if strings.HasSuffix(file.Filename, ".zip") {
-		err = google.ParseTakeoutZip(bytes.NewReader(data))
+		err = facebook.ParseDataZip(bytes.NewReader(data))
 		if err != nil {
 			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
 			return
-		}
-		err = database.SetUser(model.User{
-			Name:    "Alice",
-			Picture: "defaultuser.jpg",
-		})
-		if err != nil {
-			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
-		}
-		return
-	} else if strings.HasSuffix(file.Filename, ".tgz") {
-		err = google.ParseTakeoutGzip(bytes.NewReader(data))
-		if err != nil {
-			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
-			return
-		}
-		err = database.SetUser(model.User{
-			Name:    "Alice",
-			Picture: "defaultuser.jpg",
-		})
-		if err != nil {
-			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
 		}
 		return
 	}
-
 	http.Error(w, "missing file or unsuported format", http.StatusBadRequest)
 }
