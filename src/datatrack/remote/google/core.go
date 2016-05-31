@@ -43,7 +43,7 @@ func ParseTakeoutGzip(reader io.Reader) (err error) {
 	return
 }
 
-// ParseTakeoutZip parses a Gogoel takeout file in zip format.
+// ParseTakeoutZip parses a Google takeout file in zip format.
 func ParseTakeoutZip(reader io.Reader) (err error) {
 	file, err := ioutil.TempFile("", "googletakeout")
 	if err != nil {
