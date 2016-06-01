@@ -10,8 +10,10 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var org = model.Organization{
@@ -47,76 +49,83 @@ func ParseDataZip(reader io.Reader) (err error) {
 		return err
 	}
 	defer r.Close()
-	if err := database.AddOrganization(org); err != nil {
-		return err
-	}
-	// TEMPORARY
 
-	disclosure, err := model.MakeDisclosure(database.Self, org.ID, "",
-		"", "", "", "")
-	if err != nil {
-		return err
-	}
-	err = database.AddDisclosure(disclosure)
-	if err != nil {
-		return err
-	}
-	var attributes []model.Attribute
+	wg := new(sync.WaitGroup)
+	errChan := make(chan error, 1)
 
 	for _, f := range r.File {
 		switch f.Name {
 		case "photos/profile.jpg":
-			reader, err := f.Open()
-			if err != nil {
-				return err
-			}
-			contents, err := ioutil.ReadAll(reader)
-			if err != nil {
-				return err
-			}
-			err = ioutil.WriteFile(config.StaticPath+"/img/"+ProfilePicName,
-				contents, 0644)
-			if err != nil {
-				return err
-			}
-
+			wg.Add(1)
+			go ReadFile(f, SaveProfilePic, wg, errChan)
 		case "index.htm":
-			reader, err := f.Open()
-			if err != nil {
-				return err
-			}
-			attributes, err = ReadIndex(reader)
-			if err != nil {
-				return err
-			}
+			wg.Add(1)
+			go ReadFile(f, ReadIndex, wg, errChan)
 		default:
 			continue
 		}
 	}
-	var attributes_s []string
-	for _, a := range attributes {
-		attributes_s = append(attributes_s, a.ID)
-	}
-
-	disclosed := model.Disclosed{
-		Disclosure: disclosure.ID,
-		Attribute:  attributes_s,
-	}
-	err = database.AddDisclosed(disclosed)
-	if err != nil {
+	if err := database.AddOrganization(org); err != nil {
 		return err
 	}
-	wg := new(sync.WaitGroup)
-	wg.Add(1)
-	errChan := make(chan error, 1)
-	go database.AddAttributes(attributes, wg, errChan)
 	wg.Wait()
 	close(errChan)
 	for err := range errChan {
 		return err
 	}
-
 	return nil
+}
+
+type ReadFunOutput struct {
+	attributes  []model.Attribute
+	disclosures []model.Disclosure
+	discloseds  []model.Disclosed
+	downstreams []model.Downstream
+}
+
+type read_func func(reader io.Reader) (out ReadFunOutput, err error)
+
+func ReadFile(f *zip.File, fun read_func, wg *sync.WaitGroup, errChan chan error) {
+	defer wg.Done()
+	reader, err := f.Open()
+	if err != nil {
+		errChan <- err
+		return
+	}
+	out, err := fun(reader)
+	if err != nil {
+		errChan <- err
+		return
+	}
+	if len(out.attributes) > 0 {
+		wg.Add(1)
+		go database.AddAttributes(out.attributes, wg, errChan)
+	}
+	if len(out.disclosures) > 0 {
+		wg.Add(1)
+		go database.AddDisclosures(out.disclosures, wg, errChan)
+	}
+	if len(out.discloseds) > 0 {
+		wg.Add(1)
+		go database.AddDiscloseds(out.discloseds, wg, errChan)
+	}
+	if len(out.downstreams) > 0 {
+		wg.Add(1)
+		go database.AddDownstreams(out.downstreams, wg, errChan)
+	}
+}
+
+func SaveProfilePic(reader io.Reader) (out ReadFunOutput, err error) {
+	contents, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return out, err
+	}
+	err = ioutil.WriteFile(config.StaticPath+"/img/"+ProfilePicName,
+		contents, 0644)
+	if err != nil {
+		return out, err
+	}
+	return out, nil
 }
 
 const (
@@ -124,23 +133,26 @@ const (
 	SName    // S is for Scanning
 	SHeader
 	SData
+	SParseDate
 )
 
-func ReadIndex(reader io.Reader) (attributes []model.Attribute, err error) {
+func ReadIndex(reader io.Reader) (out ReadFunOutput, err error) {
 	z := html.NewTokenizer(reader)
 	state := Scanning
 	var header string
 	var data = make([]string, 0)
+	var unixTimestamp int64
+outer:
 	for {
 		tt := z.Next()
 
 		switch tt {
 		case html.ErrorToken:
 			// End of the document, we're done
-			return attributes, nil
+			break outer
 		case html.StartTagToken:
 			if state == Scanning {
-				tag_, _ := z.TagName()
+				tag_, hasattrs := z.TagName()
 				tag := string(tag_)
 				switch tag {
 				case "h1":
@@ -151,6 +163,13 @@ func ReadIndex(reader io.Reader) (attributes []model.Attribute, err error) {
 				case "td":
 					state = SData
 					data = data[:0]
+				case "div":
+					if hasattrs {
+						key, value, _ := z.TagAttr()
+						if string(key) == "class" && string(value) == "footer" {
+							state = SParseDate
+						}
+					}
 				}
 			}
 		case html.EndTagToken:
@@ -164,31 +183,61 @@ func ReadIndex(reader io.Reader) (attributes []model.Attribute, err error) {
 				state = Scanning
 				attrs, err := SaveScannedAttributes(header, data)
 				if err != nil {
-					return nil, err
+					return out, err
 				}
-				attributes = append(attributes, attrs...)
+				out.attributes = append(out.attributes, attrs...)
+			} else if state == SParseDate && tag == "div" {
+				state = Scanning
 			}
 
 		case html.TextToken:
-			if state == SName {
+			switch state {
+			case SName:
 				err = database.SetUser(model.User{
 					Name:    string(z.Text()),
 					Picture: ProfilePicName,
 				})
-			} else if state == SHeader {
+			case SHeader:
 				if header != "" {
-					return nil, errors.New("Found two data in a row")
+					return out, errors.New("Found two data in a row")
 				}
 				header = string(z.Text())
-			} else if state == SData {
+			case SData:
 				data = append(data, string(z.Text()))
+			case SParseDate:
+				stringDate := strings.Split(string(z.Text()), ", ")
+				var date time.Time
+				date, err = time.Parse("2 Jan 2006 at 15:04 UTC-07",
+					stringDate[len(stringDate)-1])
+				// The user interface is not timezone-aware, so we strip the timezone
+				_, offset := date.Zone()
+				unixTimestamp = date.Unix() + int64(offset)
 			}
 		}
 
 		if err != nil {
-			return nil, err
+			return out, err
 		}
 	}
+
+	disclosure, err := model.MakeDisclosure(database.Self, org.ID,
+		// unixTimestamp is in seconds, we need milliseconds
+		strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
+	if err != nil {
+		return out, err
+	}
+	out.disclosures = append(out.disclosures, disclosure)
+
+	var attributes_s []string
+	for _, a := range out.attributes {
+		attributes_s = append(attributes_s, a.ID)
+	}
+	disclosed := model.Disclosed{
+		Disclosure: disclosure.ID,
+		Attribute:  attributes_s,
+	}
+	out.discloseds = append(out.discloseds, disclosed)
+	return out, nil
 }
 
 func Split(in []string, split string) (out []string) {
