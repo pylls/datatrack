@@ -356,6 +356,7 @@ func ReadMessages(reader io.Reader) (out ReadFunOutput, err error) {
 
 	first_msg := make(map[string]time.Time)
 	last_msg := make(map[string]time.Time)
+	num_msg := make(map[string]int64)
 	var current_names []string
 outer:
 	for {
@@ -410,10 +411,9 @@ outer:
 					if _, ok := first_msg[n]; !ok {
 						// last possible time
 						first_msg[n] = time.Now()
-					}
-					if _, ok := last_msg[n]; !ok {
 						// first possible time
 						last_msg[n] = time.Time{}
+						num_msg[n] = 0
 					}
 				}
 			case MsgTimestamp:
@@ -423,7 +423,6 @@ outer:
 				if err != nil {
 					return out, err
 				}
-				// strip timezone
 				for _, n := range current_names {
 					if date.Before(first_msg[n]) {
 						first_msg[n] = date
@@ -431,6 +430,7 @@ outer:
 					if date.After(last_msg[n]) {
 						last_msg[n] = date
 					}
+					num_msg[n]++
 				}
 			}
 		}
@@ -465,10 +465,15 @@ outer:
 		if err != nil {
 			return out, err
 		}
-		out.attributes = append(out.attributes, first, last, user)
+		nmsg, err := model.MakeAttribute("Number of Messages", "comments-o",
+			strconv.FormatInt(num_msg[name], 10))
+		if err != nil {
+			return out, err
+		}
+		out.attributes = append(out.attributes, first, last, user, nmsg)
 		disclosed := model.Disclosed{
 			Disclosure: disclosure.ID,
-			Attribute:  []string{first.ID, last.ID, user.ID},
+			Attribute:  []string{user.ID, nmsg.ID, first.ID, last.ID},
 		}
 		out.discloseds = append(out.discloseds, disclosed)
 	}
