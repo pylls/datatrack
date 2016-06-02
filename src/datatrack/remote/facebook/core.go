@@ -61,6 +61,9 @@ func ParseDataZip(reader io.Reader) (err error) {
 		case "index.htm":
 			wg.Add(1)
 			go ReadFile(f, ReadIndex, wg, errChan)
+		case "html/messages.htm":
+			wg.Add(1)
+			go ReadFile(f, ReadMessages, wg, errChan)
 		default:
 			continue
 		}
@@ -328,4 +331,146 @@ func SaveScannedAttributes(header string, data []string) (attrs []model.Attribut
 		attrs = append(attrs, attr)
 	}
 	return attrs, nil
+}
+
+const (
+	MsgScan = iota
+	MsgThread
+	MsgTimestamp
+)
+
+// Save the earliest and latest time you spoke with a user
+func ReadMessages(reader io.Reader) (out ReadFunOutput, err error) {
+	z := html.NewTokenizer(reader)
+	state := MsgScan
+	var user_name string
+	// Busy wait, but it's clean code
+	for user_name == "" {
+		user, err := database.GetUser()
+		if err != nil {
+			time.Sleep(20 * time.Millisecond)
+		} else {
+			user_name = user.Name
+		}
+	}
+
+	first_msg := make(map[string]time.Time)
+	last_msg := make(map[string]time.Time)
+	var current_names []string
+outer:
+	for {
+		tt := z.Next()
+
+		switch tt {
+		case html.ErrorToken:
+			// End of the document, we're done
+			break outer
+		case html.StartTagToken:
+			if state == MsgScan {
+				tag_, hasattrs := z.TagName()
+				tag := string(tag_)
+				if hasattrs {
+					if tag == "div" {
+						key, value, hasnext := z.TagAttr()
+						for hasnext && string(key) != "class" {
+							key, value, hasnext = z.TagAttr()
+						}
+						if string(key) == "class" && string(value) == "thread" {
+							state = MsgThread
+						}
+					} else if tag == "span" {
+						key, value, hasnext := z.TagAttr()
+						for hasnext && string(key) != "class" {
+							key, value, hasnext = z.TagAttr()
+						}
+						if string(key) == "class" && string(value) == "meta" {
+							state = MsgTimestamp
+						}
+					}
+				}
+			}
+		case html.TextToken:
+			switch state {
+			case MsgThread:
+				state = MsgScan
+				names := strings.Split(string(z.Text()), ", ")
+				current_names = nil
+				contains_user_name := false
+				for _, n := range names {
+					if n == user_name {
+						contains_user_name = true
+					} else {
+						current_names = append(current_names, n)
+					}
+				}
+				if !contains_user_name {
+					current_names = nil
+				}
+				for _, n := range current_names {
+					if _, ok := first_msg[n]; !ok {
+						// last possible time
+						first_msg[n] = time.Now()
+					}
+					if _, ok := last_msg[n]; !ok {
+						// first possible time
+						last_msg[n] = time.Time{}
+					}
+				}
+			case MsgTimestamp:
+				state = MsgScan
+				date, err := time.Parse("Monday, 2 January 2006 at 15:04 UTC-07",
+					string(z.Text()))
+				if err != nil {
+					return out, err
+				}
+				// strip timezone
+				for _, n := range current_names {
+					if date.Before(first_msg[n]) {
+						first_msg[n] = date
+					}
+					if date.After(last_msg[n]) {
+						last_msg[n] = date
+					}
+				}
+			}
+		}
+
+		if err != nil {
+			return out, err
+		}
+	}
+
+	for name, date := range last_msg {
+		_, offset := date.Zone()
+		unixTimestamp := date.Unix() + int64(offset)
+		disclosure, err := model.MakeDisclosure(database.Self, org.ID,
+			// unixTimestamp is in seconds, we need milliseconds
+			strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
+		if err != nil {
+			return out, err
+		}
+		out.disclosures = append(out.disclosures, disclosure)
+
+		first, err := model.MakeAttribute("First Message", "comments-o",
+			first_msg[name].Format("2 Jan 2006 at 15:04 UTC-07"))
+		if err != nil {
+			return out, err
+		}
+		last, err := model.MakeAttribute("Last Message", "comments-o",
+			date.Format("2 Jan 2006 at 15:04 UTC-07"))
+		if err != nil {
+			return out, err
+		}
+		user, err := model.MakeAttribute("Recipient", "comments-o", name)
+		if err != nil {
+			return out, err
+		}
+		out.attributes = append(out.attributes, first, last, user)
+		disclosed := model.Disclosed{
+			Disclosure: disclosure.ID,
+			Attribute:  []string{first.ID, last.ID, user.ID},
+		}
+		out.discloseds = append(out.discloseds, disclosed)
+	}
+	return out, nil
 }
