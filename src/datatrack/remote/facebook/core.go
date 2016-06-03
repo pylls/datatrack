@@ -59,6 +59,11 @@ func ParseDataZip(reader io.Reader) (err error) {
 		case "photos/profile.jpg":
 			wg.Add(1)
 			go ReadFile(f, SaveProfilePic, wg, errChan)
+
+			err = database.SetUser(model.User{
+				Name:    "Adria Garriga",
+				Picture: ProfilePicName,
+			})
 		case "index.htm":
 			wg.Add(1)
 			go ReadFile(f, ReadIndex, wg, errChan)
@@ -107,22 +112,27 @@ func ReadFile(f *zip.File, fun read_func, wg *sync.WaitGroup, errChan chan error
 	}
 	if len(out.attributes) > 0 {
 		wg.Add(1)
+		fmt.Printf("For func %v: %d attributes\n", fun, len(out.attributes))
 		go database.AddAttributes(out.attributes, wg, errChan)
 	}
 	if len(out.disclosures) > 0 {
 		wg.Add(1)
+		fmt.Printf("For func %v: %d disclosures\n", fun, len(out.attributes))
 		go database.AddDisclosures(out.disclosures, wg, errChan)
 	}
 	if len(out.discloseds) > 0 {
 		wg.Add(1)
+		fmt.Printf("For func %v: %d discloseds\n", fun, len(out.attributes))
 		go database.AddDiscloseds(out.discloseds, wg, errChan)
 	}
 	if len(out.downstreams) > 0 {
 		wg.Add(1)
+		fmt.Printf("For func %v: %d downstreams\n", fun, len(out.attributes))
 		go database.AddDownstreams(out.downstreams, wg, errChan)
 	}
 	if len(out.coordinates) > 0 {
 		wg.Add(1)
+		fmt.Printf("For func %v: %d coordinates\n", fun, len(out.coordinates))
 		go database.AddCoordinates(out.coordinates, wg, errChan)
 	}
 }
@@ -556,9 +566,13 @@ outer:
 		case html.EndTagToken:
 			tag_, _ := z.TagName()
 			tag := string(tag_)
-			if state == SecItemMeta && tag == "p" {
-				state = SecAccountActivity
-				activities[cur_ip] = append(activities[cur_ip], cur_act)
+			if tag == "p" {
+				if state == SecItemMeta {
+					state = SecAccountActivity
+					activities[cur_ip] = append(activities[cur_ip], cur_act)
+				} else if state == SecIPMeta || state == SecLocationMeta {
+					state = SecProtectionItem
+				}
 			} else if tag == "ul" {
 				state = SecScan
 			}
@@ -605,10 +619,20 @@ outer:
 					state = SecLoginProtection
 				}
 			case SecIPMeta, SecLocationMeta:
+				var date time.Time
+				filled := false
 				if strings.HasPrefix(text, "Created: ") {
 					s := strings.TrimPrefix(text, "Created: ")
-					date, err := time.Parse(
+					date, err = time.Parse(
 						"Monday, 2 January 2006 at 15:04 UTC-07", s)
+					filled = true
+				} else if strings.HasPrefix(text, "Updated: ") {
+					s := strings.TrimPrefix(text, "Updated: ")
+					date, err = time.Parse(
+						"Monday, 2 January 2006 at 15:04 UTC-07", s)
+					filled = true
+				}
+				if filled {
 					if err != nil {
 						return out, err
 					}
@@ -647,34 +671,37 @@ outer:
 			// unixTimestamp is in seconds, we need milliseconds
 			strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
 
-		self_disclosure, err := model.MakeDisclosure(org.ID, org.ID,
-			// unixTimestamp is in seconds, we need milliseconds
-			strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
-
-		out.disclosures = append(out.disclosures, disclosure, self_disclosure)
-		out.downstreams = append(out.downstreams, model.Downstream{
-			Origin: disclosure.ID,
-			Result: self_disclosure.ID,
-		})
-
+		out.disclosures = append(out.disclosures, disclosure)
 		latlong, loc_ok := location_creation[date]
 		if loc_ok {
+			//			self_disclosure, err := model.MakeDisclosure(org.ID, org.ID,
+			// unixTimestamp is in seconds, we need milliseconds
+			//				strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
+			//			out.disclosures = append(out.disclosures, self_disclosure)
+			self_disclosure := disclosure
+
 			coord_attr, err := model.MakeAttribute("Coordinates", "map-marker",
 				fmt.Sprintf("%f, %f", latlong.Latitude, latlong.Longitude))
 			if err != nil {
 				return out, err
 			}
+			out.attributes = append(out.attributes, coord_attr)
 
 			out.coordinates = append(out.coordinates,
-				model.MakeCoordinate(fmt.Sprintf("%f", cur_latlong.Latitude),
-					fmt.Sprintf("%f", cur_latlong.Longitude),
+				model.MakeCoordinate(fmt.Sprintf("%f", latlong.Latitude),
+					fmt.Sprintf("%f", latlong.Longitude),
 					self_disclosure.ID, self_disclosure.Timestamp))
-			out.attributes = append(out.attributes, coord_attr)
 			disclosed_downstream := model.Disclosed{
 				Disclosure: self_disclosure.ID,
 				Attribute:  []string{coord_attr.ID},
 			}
 			out.discloseds = append(out.discloseds, disclosed_downstream)
+
+			/*			out.downstreams = append(out.downstreams, model.Downstream{
+						Origin: disclosure.ID,
+						Result: self_disclosure.ID,
+					})*/
+
 		}
 
 		var attributes_s []string
@@ -687,5 +714,19 @@ outer:
 		}
 		out.discloseds = append(out.discloseds, disclosed)
 	}
+
+	fmt.Printf("len(ip_creation) = %d\n", len(ip_creation))
+	fmt.Printf("len(location_creation) = %d\n", len(location_creation))
+	fmt.Printf("len(activities) = %d\n", len(activities))
+	s := 0
+	for _, a := range activities {
+		s += len(a)
+	}
+	fmt.Printf("len(len(activities)) = %d\n", s)
+	fmt.Printf("len(out.attributes) = %d\n", len(out.attributes))
+	fmt.Printf("len(out.coordinates) = %d\n", len(out.coordinates))
+	fmt.Printf("len(out.discloseds) = %d\n", len(out.discloseds))
+	fmt.Printf("len(out.disclosures) = %d\n", len(out.disclosures))
+	fmt.Printf("len(out.downstreams) = %d\n", len(out.downstreams))
 	return out, nil
 }
