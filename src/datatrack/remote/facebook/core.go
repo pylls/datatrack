@@ -6,6 +6,7 @@ import (
 	"datatrack/database"
 	"datatrack/model"
 	"errors"
+	"fmt"
 	"golang.org/x/net/html"
 	"io"
 	"io/ioutil"
@@ -119,6 +120,10 @@ func ReadFile(f *zip.File, fun read_func, wg *sync.WaitGroup, errChan chan error
 	if len(out.downstreams) > 0 {
 		wg.Add(1)
 		go database.AddDownstreams(out.downstreams, wg, errChan)
+	}
+	if len(out.coordinates) > 0 {
+		wg.Add(1)
+		go database.AddCoordinates(out.coordinates, wg, errChan)
 	}
 }
 
@@ -389,7 +394,7 @@ outer:
 						}
 					} else if tag == "span" {
 						if CheckAttrPresent(z, "class", "meta") {
-							state = MsgThread
+							state = MsgTimestamp
 						}
 					}
 				}
@@ -549,19 +554,19 @@ outer:
 				}
 			}
 		case html.EndTagToken:
-			tag, err := string(z.TagName())
-			if err != null {
-				reward out, err
-			}
+			tag_, _ := z.TagName()
+			tag := string(tag_)
 			if state == SecItemMeta && tag == "p" {
 				state = SecAccountActivity
 				activities[cur_ip] = append(activities[cur_ip], cur_act)
+			} else if tag == "ul" {
+				state = SecScan
 			}
 		case html.TextToken:
 			text := string(z.Text())
 			switch state {
 			case SecHeader:
-				if text == "Account Activity" {
+				if text == "Account activity" {
 					state = SecAccountActivity
 				} else if text == "Login Protection Data" {
 					state = SecLoginProtection
@@ -576,26 +581,28 @@ outer:
 					break
 				}
 				if strings.HasPrefix(text, "IP Address: ") {
-					cur_ip = strings.TrimPrefix(text, "IP Address: ")
+					cur_ip = IPAddr(strings.TrimPrefix(string(text), "IP Address: "))
 				} else if strings.HasPrefix(text, "Browser: ") {
 					cur_act.UserAgent = strings.TrimPrefix(text, "Browser: ")
 				}
 			case SecProtectionItem:
 				if strings.HasPrefix(text, "IP Address: ") {
-					cur_ip = strings.TrimPrefix(text, "IP Address: ")
+					cur_ip = IPAddr(strings.TrimPrefix(string(text), "IP Address: "))
 					state = SecIP
 				} else if strings.HasPrefix(text, "Estimated location inferred from IP: ") {
 					c := strings.Split(strings.TrimPrefix(text,
 						"Estimated location inferred from IP: "), ", ")
-					cur_latlong.Latitude, err = strconv.ParseFloat(c[0])
+					cur_latlong.Latitude, err = strconv.ParseFloat(c[0], 64)
 					if err != nil {
 						return out, err
 					}
-					cur_latlong.Longitude, err = strconv.ParseFloat(c[1])
+					cur_latlong.Longitude, err = strconv.ParseFloat(c[1], 64)
 					if err != nil {
 						return out, err
 					}
 					state = SecLocation
+				} else {
+					state = SecLoginProtection
 				}
 			case SecIPMeta, SecLocationMeta:
 				if strings.HasPrefix(text, "Created: ") {
@@ -616,8 +623,8 @@ outer:
 	}
 	for date, ip := range ip_creation {
 		var attrs []model.Attribute
-		a, err := model.MakeAttribute("IP Address", "flag-checkered", ip)
-		if err == nil {
+		a, err := model.MakeAttribute("IP Address", "flag-checkered", string(ip))
+		if err != nil {
 			return out, err
 		}
 		attrs = append(attrs, a)
@@ -625,13 +632,14 @@ outer:
 		if acts_ok {
 			for _, action := range activities[ip] {
 				a, err := model.MakeAttribute(action.Act, "gear",
-					action.Date+"; "+action.UserAgent)
-				if err == nil {
+					action.Date.Format("2 Jan 2006 at 15:04 UTC-07")+"; "+action.UserAgent)
+				if err != nil {
 					return out, err
 				}
 				attrs = append(attrs, a)
 			}
 		}
+		out.attributes = append(out.attributes, attrs...)
 
 		_, offset := date.Zone()
 		unixTimestamp := date.Unix() + int64(offset)
@@ -644,36 +652,40 @@ outer:
 			strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
 
 		out.disclosures = append(out.disclosures, disclosure, self_disclosure)
+		out.downstreams = append(out.downstreams, model.Downstream{
+			Origin: disclosure.ID,
+			Result: self_disclosure.ID,
+		})
 
-		location, loc_ok := location_creation[date]
+		latlong, loc_ok := location_creation[date]
 		if loc_ok {
 			coord_attr, err := model.MakeAttribute("Coordinates", "map-marker",
-				fmt.Sprintf("%s, %s",
-					cur_latlong.Latitude,
-					cur_latlong.Longitude))
-			if err == nil {
+				fmt.Sprintf("%f, %f", latlong.Latitude, latlong.Longitude))
+			if err != nil {
 				return out, err
 			}
 
 			out.coordinates = append(out.coordinates,
-				model.MakeCoordinate(cur_latlong.Latitude, cur_latlong.Longitude,
+				model.MakeCoordinate(fmt.Sprintf("%f", cur_latlong.Latitude),
+					fmt.Sprintf("%f", cur_latlong.Longitude),
 					self_disclosure.ID, self_disclosure.Timestamp))
-			out.attributes = append(out.attributes, coord_attr, attrs...)
-
-			var attributes_s []string
-			for _, a := range attrs {
-				attributes_s = append(attributes_s, a.ID)
-			}
-			disclosed := model.Disclosed{
-				Disclosure: disclosure.ID,
-				Attribute:  attributes_s,
-			}
-			disclosed_downstream = model.Disclosed{
+			out.attributes = append(out.attributes, coord_attr)
+			disclosed_downstream := model.Disclosed{
 				Disclosure: self_disclosure.ID,
-				Attribute:  attributes_s,
+				Attribute:  []string{coord_attr.ID},
 			}
-			out.discloseds = append(out.discloseds, disclosed, disclosed_downstream)
+			out.discloseds = append(out.discloseds, disclosed_downstream)
 		}
-	}
 
+		var attributes_s []string
+		for _, a := range attrs {
+			attributes_s = append(attributes_s, a.ID)
+		}
+		disclosed := model.Disclosed{
+			Disclosure: disclosure.ID,
+			Attribute:  attributes_s,
+		}
+		out.discloseds = append(out.discloseds, disclosed)
+	}
+	return out, nil
 }
