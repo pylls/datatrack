@@ -48,6 +48,8 @@ $(document).ready(function() {
 	$("#to-import-google").click(function() {
 		$("#start").hide();
 		$("#importform").attr("action", "google");
+		$(".facebook-explanation").addClass("hide showme");
+		$(".google-explanation").removeClass("hide showme");
 		$(".provider-name").text("Google");
 		$(".provider-data-name").text("Google Takeout");
 		showToImport(ifUploadedGoogle);
@@ -55,6 +57,8 @@ $(document).ready(function() {
 	$("#to-import-facebook").click(function() {
 		$("#start").hide();
 		$("#importform").attr("action", "facebook");
+		$(".facebook-explanation").removeClass("hide showme");
+		$(".google-explanation").addClass("hide showme");
 		$(".provider-name").text("Facebook");
 		$(".provider-data-name").text("Facebook data");
 		showToImport(ifUploadedFacebook);

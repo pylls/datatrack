@@ -674,11 +674,10 @@ outer:
 		out.disclosures = append(out.disclosures, disclosure)
 		latlong, loc_ok := location_creation[date]
 		if loc_ok {
-			//			self_disclosure, err := model.MakeDisclosure(org.ID, org.ID,
-			// unixTimestamp is in seconds, we need milliseconds
-			//				strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
-			//			out.disclosures = append(out.disclosures, self_disclosure)
-			self_disclosure := disclosure
+			self_disclosure, err := model.MakeDisclosure(org.ID, org.ID,
+				// unixTimestamp is in seconds, we need milliseconds
+				strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
+			out.disclosures = append(out.disclosures, self_disclosure)
 
 			coord_attr, err := model.MakeAttribute("Coordinates", "map-marker",
 				fmt.Sprintf("%f, %f", latlong.Latitude, latlong.Longitude))
@@ -697,10 +696,10 @@ outer:
 			}
 			out.discloseds = append(out.discloseds, disclosed_downstream)
 
-			/*			out.downstreams = append(out.downstreams, model.Downstream{
-						Origin: disclosure.ID,
-						Result: self_disclosure.ID,
-					})*/
+			out.downstreams = append(out.downstreams, model.Downstream{
+				Origin: disclosure.ID,
+				Result: self_disclosure.ID,
+			})
 
 		}
 
