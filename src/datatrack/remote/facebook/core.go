@@ -64,6 +64,9 @@ func ParseDataZip(reader io.Reader) (err error) {
 		case "html/messages.htm":
 			wg.Add(1)
 			go ReadFile(f, ReadMessages, wg, errChan)
+		case "html/security.htm":
+			wg.Add(1)
+			go ReadFile(f, ReadSecurity, wg, errChan)
 		default:
 			continue
 		}
@@ -84,6 +87,7 @@ type ReadFunOutput struct {
 	disclosures []model.Disclosure
 	discloseds  []model.Disclosed
 	downstreams []model.Downstream
+	coordinates []model.Coordinate
 }
 
 type read_func func(reader io.Reader) (out ReadFunOutput, err error)
@@ -333,6 +337,14 @@ func SaveScannedAttributes(header string, data []string) (attrs []model.Attribut
 	return attrs, nil
 }
 
+func CheckAttrPresent(z *html.Tokenizer, key string, value string) bool {
+	k, v, hasnext := z.TagAttr()
+	for hasnext && string(k) != key {
+		k, v, hasnext = z.TagAttr()
+	}
+	return string(k) == key && string(v) == value
+}
+
 const (
 	MsgScan = iota
 	MsgThread
@@ -372,20 +384,12 @@ outer:
 				tag := string(tag_)
 				if hasattrs {
 					if tag == "div" {
-						key, value, hasnext := z.TagAttr()
-						for hasnext && string(key) != "class" {
-							key, value, hasnext = z.TagAttr()
-						}
-						if string(key) == "class" && string(value) == "thread" {
+						if CheckAttrPresent(z, "class", "thread") {
 							state = MsgThread
 						}
 					} else if tag == "span" {
-						key, value, hasnext := z.TagAttr()
-						for hasnext && string(key) != "class" {
-							key, value, hasnext = z.TagAttr()
-						}
-						if string(key) == "class" && string(value) == "meta" {
-							state = MsgTimestamp
+						if CheckAttrPresent(z, "class", "meta") {
+							state = MsgThread
 						}
 					}
 				}
@@ -418,8 +422,8 @@ outer:
 				}
 			case MsgTimestamp:
 				state = MsgScan
-				date, err := time.Parse("Monday, 2 January 2006 at 15:04 UTC-07",
-					string(z.Text()))
+				date, err := time.Parse(
+					"Monday, 2 January 2006 at 15:04 UTC-07", string(z.Text()))
 				if err != nil {
 					return out, err
 				}
@@ -478,4 +482,198 @@ outer:
 		out.discloseds = append(out.discloseds, disclosed)
 	}
 	return out, nil
+}
+
+const (
+	SecScan = iota
+	SecHeader
+	SecAccountActivity
+	SecItem
+	SecItemMeta
+	SecLoginProtection
+	SecProtectionItem
+	SecIP
+	SecLocation
+	SecIPMeta
+	SecLocationMeta
+)
+
+type LatLong struct {
+	Latitude  float64
+	Longitude float64
+}
+type ActDate struct {
+	Act       string
+	Date      time.Time
+	UserAgent string
+}
+type IPAddr string
+
+// Save the locations and IPs you accessed Facebook from and when you did so
+func ReadSecurity(reader io.Reader) (out ReadFunOutput, err error) {
+	z := html.NewTokenizer(reader)
+	state := SecScan
+
+	ip_creation := make(map[time.Time]IPAddr)
+	location_creation := make(map[time.Time]LatLong)
+	activities := make(map[IPAddr][]ActDate) // map IP to activities
+	var cur_act ActDate
+	var cur_ip IPAddr
+	var cur_latlong LatLong
+outer:
+	for {
+		tt := z.Next()
+
+		switch tt {
+		case html.ErrorToken:
+			// End of the document, we're done
+			break outer
+		case html.StartTagToken:
+			tag_, hasattrs := z.TagName()
+			tag := string(tag_)
+			if state == SecScan && tag == "h2" {
+				state = SecHeader
+			} else if state == SecAccountActivity && tag == "li" {
+				state = SecItem
+			} else if state == SecLoginProtection && tag == "li" {
+				state = SecProtectionItem
+			} else if hasattrs && tag == "p" &&
+				CheckAttrPresent(z, "class", "meta") {
+				switch state {
+				case SecItem:
+					state = SecItemMeta
+				case SecIP:
+					state = SecIPMeta
+				case SecLocation:
+					state = SecLocationMeta
+				}
+			}
+		case html.EndTagToken:
+			tag, err := string(z.TagName())
+			if err != null {
+				reward out, err
+			}
+			if state == SecItemMeta && tag == "p" {
+				state = SecAccountActivity
+				activities[cur_ip] = append(activities[cur_ip], cur_act)
+			}
+		case html.TextToken:
+			text := string(z.Text())
+			switch state {
+			case SecHeader:
+				if text == "Account Activity" {
+					state = SecAccountActivity
+				} else if text == "Login Protection Data" {
+					state = SecLoginProtection
+				}
+			case SecItem:
+				cur_act.Act = text
+			case SecItemMeta:
+				date, err := time.Parse(
+					"Monday, 2 January 2006 at 15:04 UTC-07", text)
+				if err == nil {
+					cur_act.Date = date
+					break
+				}
+				if strings.HasPrefix(text, "IP Address: ") {
+					cur_ip = strings.TrimPrefix(text, "IP Address: ")
+				} else if strings.HasPrefix(text, "Browser: ") {
+					cur_act.UserAgent = strings.TrimPrefix(text, "Browser: ")
+				}
+			case SecProtectionItem:
+				if strings.HasPrefix(text, "IP Address: ") {
+					cur_ip = strings.TrimPrefix(text, "IP Address: ")
+					state = SecIP
+				} else if strings.HasPrefix(text, "Estimated location inferred from IP: ") {
+					c := strings.Split(strings.TrimPrefix(text,
+						"Estimated location inferred from IP: "), ", ")
+					cur_latlong.Latitude, err = strconv.ParseFloat(c[0])
+					if err != nil {
+						return out, err
+					}
+					cur_latlong.Longitude, err = strconv.ParseFloat(c[1])
+					if err != nil {
+						return out, err
+					}
+					state = SecLocation
+				}
+			case SecIPMeta, SecLocationMeta:
+				if strings.HasPrefix(text, "Created: ") {
+					s := strings.TrimPrefix(text, "Created: ")
+					date, err := time.Parse(
+						"Monday, 2 January 2006 at 15:04 UTC-07", s)
+					if err != nil {
+						return out, err
+					}
+					if state == SecLocationMeta {
+						location_creation[date] = cur_latlong
+					} else {
+						ip_creation[date] = cur_ip
+					}
+				}
+			}
+		}
+	}
+	for date, ip := range ip_creation {
+		var attrs []model.Attribute
+		a, err := model.MakeAttribute("IP Address", "flag-checkered", ip)
+		if err == nil {
+			return out, err
+		}
+		attrs = append(attrs, a)
+		_, acts_ok := activities[ip]
+		if acts_ok {
+			for _, action := range activities[ip] {
+				a, err := model.MakeAttribute(action.Act, "gear",
+					action.Date+"; "+action.UserAgent)
+				if err == nil {
+					return out, err
+				}
+				attrs = append(attrs, a)
+			}
+		}
+
+		_, offset := date.Zone()
+		unixTimestamp := date.Unix() + int64(offset)
+		disclosure, err := model.MakeDisclosure(database.Self, org.ID,
+			// unixTimestamp is in seconds, we need milliseconds
+			strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
+
+		self_disclosure, err := model.MakeDisclosure(org.ID, org.ID,
+			// unixTimestamp is in seconds, we need milliseconds
+			strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
+
+		out.disclosures = append(out.disclosures, disclosure, self_disclosure)
+
+		location, loc_ok := location_creation[date]
+		if loc_ok {
+			coord_attr, err := model.MakeAttribute("Coordinates", "map-marker",
+				fmt.Sprintf("%s, %s",
+					cur_latlong.Latitude,
+					cur_latlong.Longitude))
+			if err == nil {
+				return out, err
+			}
+
+			out.coordinates = append(out.coordinates,
+				model.MakeCoordinate(cur_latlong.Latitude, cur_latlong.Longitude,
+					self_disclosure.ID, self_disclosure.Timestamp))
+			out.attributes = append(out.attributes, coord_attr, attrs...)
+
+			var attributes_s []string
+			for _, a := range attrs {
+				attributes_s = append(attributes_s, a.ID)
+			}
+			disclosed := model.Disclosed{
+				Disclosure: disclosure.ID,
+				Attribute:  attributes_s,
+			}
+			disclosed_downstream = model.Disclosed{
+				Disclosure: self_disclosure.ID,
+				Attribute:  attributes_s,
+			}
+			out.discloseds = append(out.discloseds, disclosed, disclosed_downstream)
+		}
+	}
+
 }
