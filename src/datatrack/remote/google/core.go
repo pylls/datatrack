@@ -7,6 +7,7 @@ import (
 	"datatrack/database"
 	"datatrack/model"
 	"datatrack/remote/google/locationhistory"
+	"datatrack/remote/google/watchhistory"
 	"io"
 	"io/ioutil"
 	"os"
@@ -33,6 +34,10 @@ func ParseTakeoutGzip(reader io.Reader) (err error) {
 		switch h.Name {
 		case "Takeout/Location History/LocationHistory.json":
 			if err := locationhistory.FromTakeout(archive); err != nil {
+				return err
+			}
+		case "Takeout/YouTube/history/watch-history.json":
+			if err := watchhistory.FromTakeout(archive); err != nil {
 				return err
 			}
 		default:
@@ -77,6 +82,15 @@ func ParseTakeoutZip(reader io.Reader) (err error) {
 				return err
 			}
 			if err := locationhistory.FromTakeout(reader); err != nil {
+				return err
+			}
+			continue
+		case "Takeout/YouTube/history/watch-history.json":
+			reader, err := f.Open()
+			if err != nil {
+				return err
+			}
+			if err := watchhistory.FromTakeout(reader); err != nil {
 				return err
 			}
 			continue
