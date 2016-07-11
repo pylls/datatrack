@@ -6,6 +6,7 @@ import (
 	"datatrack/database/ephemeral"
 	"datatrack/handler"
 	"datatrack/handler/category"
+	"datatrack/handler/facebook"
 	"datatrack/handler/googletakeout"
 	"datatrack/handler/local"
 	"datatrack/handler/testdata"
@@ -25,6 +26,7 @@ var handlers = handler.Concat(
 	local.Handlers,
 	category.Handlers,
 	googletakeout.Handlers,
+	facebook.Handlers,
 	testdata.Handlers,
 )
 

@@ -1,6 +1,7 @@
 $(document).ready(function() {
 	
-	var ifUploaded = false;
+	var ifUploadedGoogle = false;
+	var ifUploadedFacebook = false;
 	
 	$("#start").show();
 
@@ -8,9 +9,13 @@ $(document).ready(function() {
 		$('#toProcessing').prop('disabled', !($('#fileToUpload').val()));
 	});
 
-	$.get("/v1/disclosure/count", function(disclosure) {  //check if file has been uploaded
+	$.get("/v1/disclosure/toOrganization/Google/count", function(disclosure) {  //check if file has been uploaded
 		if(disclosure != 0)
-			ifUploaded  = true;
+			ifUploadedGoogle  = true;
+	});
+	$.get("/v1/disclosure/toOrganization/Facebook/count", function(disclosure) {  //check if file has been uploaded
+		if(disclosure != 0)
+			ifUploadedFacebook  = true;
 	});
 	
 	$("#back").click(function() {
@@ -22,8 +27,7 @@ $(document).ready(function() {
 	});
 
 	
-	$("#toImport").click(function() {
-		$("#start").hide();
+	function showToImport(ifUploaded) {
 		$("#import").toggleClass("hide showme");
 		if(!ifUploaded)
 		{
@@ -32,17 +36,32 @@ $(document).ready(function() {
 		}
 		else 
 		{
-			var html ='<p>You have already uploaded your file.</p>' 
-						+'</br>' 
-						+'<button id="nextstep" type="button"	class="btn btn-primary btn-lg">Start Exploring</button>';	
-			
-			$("#textcomplete").html(html);
+			$("#textcomplete").toggleClass("hide showme");
 			$("#nextstep").click(function() {
 				$("#uploadpart").toggleClass("hide showme");
 				$("#import").toggleClass("hide showme");
 				$("#done").toggleClass("hide showme");
 			});
 		}
+	}
+
+	$("#to-import-google").click(function() {
+		$("#start").hide();
+		$("#importform").attr("action", "google");
+		$(".facebook-explanation").addClass("hide showme");
+		$(".google-explanation").removeClass("hide showme");
+		$(".provider-name").text("Google");
+		$(".provider-data-name").text("Google Takeout");
+		showToImport(ifUploadedGoogle);
+	});
+	$("#to-import-facebook").click(function() {
+		$("#start").hide();
+		$("#importform").attr("action", "facebook");
+		$(".facebook-explanation").removeClass("hide showme");
+		$(".google-explanation").addClass("hide showme");
+		$(".provider-name").text("Facebook");
+		$(".provider-data-name").text("Facebook data");
+		showToImport(ifUploadedFacebook);
 	});
 
 	$("#importform").submit(function(event) {
@@ -55,7 +74,7 @@ $(document).ready(function() {
 		var formData = new FormData($(this)[0]);
 
 		$.ajax({
-			url: "/v1/google",
+			url: "/v1/" + $("#importform").attr("action"),
 			type: "POST",
 			data: formData,
 			success: function() {
@@ -73,7 +92,6 @@ $(document).ready(function() {
 			processData: false
 		});
 	});
-
 });
 
 function importComplete() {

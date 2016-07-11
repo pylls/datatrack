@@ -37,12 +37,15 @@ func takeoutHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
 			return
 		}
-		err = database.SetUser(model.User{
-			Name:    "Alice",
-			Picture: "defaultuser.png",
-		})
+		_, err = database.GetUser()
 		if err != nil {
-			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
+			err = database.SetUser(model.User{
+				Name:    "Alice",
+				Picture: "defaultuser.png",
+			})
+			if err != nil {
+				http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
+			}
 		}
 		return
 	} else if strings.HasSuffix(file.Filename, ".tgz") {
@@ -51,14 +54,16 @@ func takeoutHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
 			return
 		}
-		err = database.SetUser(model.User{
-			Name:    "Alice",
-			Picture: "defaultuser.png",
-		})
+		_, err = database.GetUser()
 		if err != nil {
-			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
+			err = database.SetUser(model.User{
+				Name:    "Alice",
+				Picture: "defaultuser.png",
+			})
+			if err != nil {
+				http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
+			}
 		}
-		return
 	}
 
 	http.Error(w, "missing file or unsuported format", http.StatusBadRequest)
