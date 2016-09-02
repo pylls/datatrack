@@ -38,6 +38,6 @@ func benchmarkHash(length int, b *testing.B) {
 	data := make([]byte, length*1024)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		Hash(data)
+		hash(data)
 	}
 }
