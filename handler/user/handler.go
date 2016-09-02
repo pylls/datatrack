@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/goji/param"
-	"github.com/pylls/datatrack/database"
-	"github.com/pylls/datatrack/model"
+	"github.com/marcelfarres/datatrack/database"
+	"github.com/marcelfarres/datatrack/model"
 	"github.com/zenazn/goji/web"
 )
 

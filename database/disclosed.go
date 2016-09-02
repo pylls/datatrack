@@ -9,8 +9,8 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-	"github.com/pylls/datatrack/ephemeral"
-	"github.com/pylls/datatrack/model"
+	"github.com/marcelfarres/datatrack/ephemeral"
+	"github.com/marcelfarres/datatrack/model"
 )
 
 // AddDisclosed adds that a disclosure disclosed many attributes.

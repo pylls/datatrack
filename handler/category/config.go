@@ -1,8 +1,8 @@
 package category
 
 import (
-	"github.com/pylls/datatrack/config"
-	"github.com/pylls/datatrack/handler"
+	"github.com/marcelfarres/datatrack/config"
+	"github.com/marcelfarres/datatrack/handler"
 )
 
 const baseURL = config.APIURL + "/type"

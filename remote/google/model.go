@@ -1,6 +1,6 @@
 package google
 
-import "github.com/pylls/datatrack/model"
+import "github.com/marcelfarres/datatrack/model"
 
 type WatchHistory struct {
 	Videos []Video

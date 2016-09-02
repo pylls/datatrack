@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pylls/datatrack/database"
-	"github.com/pylls/datatrack/model"
+	"github.com/marcelfarres/datatrack/database"
+	"github.com/marcelfarres/datatrack/model"
 	"golang.org/x/net/html"
 )
 
