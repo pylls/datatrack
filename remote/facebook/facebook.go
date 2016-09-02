@@ -241,13 +241,13 @@ outer:
 					break
 				}
 				if strings.HasPrefix(text, "IP Address: ") {
-					curIP = IPAddr(strings.TrimPrefix(string(text), "IP Address: "))
+					curIP = IPAddr(strings.TrimPrefix(text, "IP Address: "))
 				} else if strings.HasPrefix(text, "Browser: ") {
 					curAct.UserAgent = strings.TrimPrefix(text, "Browser: ")
 				}
 			case SecProtectionItem:
 				if strings.HasPrefix(text, "IP Address: ") {
-					curIP = IPAddr(strings.TrimPrefix(string(text), "IP Address: "))
+					curIP = IPAddr(strings.TrimPrefix(text, "IP Address: "))
 					state = SecIP
 				} else if strings.HasPrefix(text, "Estimated location inferred from IP: ") {
 					c := strings.Split(strings.TrimPrefix(text,

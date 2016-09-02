@@ -29,32 +29,32 @@ var Handlers = handler.Handlers{
 	handler.Handler{
 		Name:   "local organization data",
 		Method: "get",
-		Url:    baseURL,
+		URL:    baseURL,
 		Handle: orgHandler(organization)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + config.CountURL,
+		URL:    baseURL + config.CountURL,
 		Handle: orgHandler(organization, count)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + config.RangeURL,
+		URL:         baseURL + config.RangeURL,
 		Description: "retrieve all organization ids",
 		Handle:      orgHandler(organization, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + attributeURL,
+		URL:    baseURL + attributeURL,
 		Handle: orgHandler(attribute)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + attributeURL + config.CountURL,
+		URL:    baseURL + attributeURL + config.CountURL,
 		Handle: orgHandler(attribute, count)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + attributeURL + config.RangeURL,
+		URL:         baseURL + attributeURL + config.RangeURL,
 		Description: "retrieve all organization ids that received :attributeId",
 		Handle:      orgHandler(attribute, subset)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + withID,
+		URL:         baseURL + withID,
 		Description: "retrieve organization",
 		Handle:      detailsHandler}}

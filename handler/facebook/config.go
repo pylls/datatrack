@@ -12,6 +12,6 @@ var Handlers = handler.Handlers{
 	handler.Handler{
 		Name:        "Facebook",
 		Method:      "post",
-		Url:         baseURL,
+		URL:         baseURL,
 		Description: "adds the data from Facebook (zip file)",
 		Handle:      facebookHandler}}

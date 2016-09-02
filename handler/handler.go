@@ -14,7 +14,7 @@ var activeHandlers Handlers
 type Handler struct {
 	Name        string
 	Method      string
-	Url         string
+	URL         string
 	Description string
 	Handle      func(web.C, http.ResponseWriter, *http.Request)
 }
@@ -24,33 +24,33 @@ type Handlers []Handler
 func (h Handler) Register() error {
 	switch strings.ToLower(h.Method) {
 	case "options":
-		goji.Options(h.Url, h.Handle)
-		goji.Options(h.Url+"/", h.Handle)
+		goji.Options(h.URL, h.Handle)
+		goji.Options(h.URL+"/", h.Handle)
 	case "get":
-		goji.Get(h.Url, h.Handle)
-		goji.Get(h.Url+"/", h.Handle)
+		goji.Get(h.URL, h.Handle)
+		goji.Get(h.URL+"/", h.Handle)
 	case "head":
-		goji.Head(h.Url, h.Handle)
-		goji.Head(h.Url+"/", h.Handle)
+		goji.Head(h.URL, h.Handle)
+		goji.Head(h.URL+"/", h.Handle)
 	case "post":
-		goji.Post(h.Url, h.Handle)
-		goji.Post(h.Url+"/", h.Handle)
+		goji.Post(h.URL, h.Handle)
+		goji.Post(h.URL+"/", h.Handle)
 	case "put":
-		goji.Put(h.Url, h.Handle)
-		goji.Put(h.Url+"/", h.Handle)
+		goji.Put(h.URL, h.Handle)
+		goji.Put(h.URL+"/", h.Handle)
 	case "delete":
-		goji.Delete(h.Url, h.Handle)
-		goji.Delete(h.Url+"/", h.Handle)
+		goji.Delete(h.URL, h.Handle)
+		goji.Delete(h.URL+"/", h.Handle)
 	case "trace":
-		goji.Trace(h.Url, h.Handle)
-		goji.Trace(h.Url+"/", h.Handle)
+		goji.Trace(h.URL, h.Handle)
+		goji.Trace(h.URL+"/", h.Handle)
 	case "connect":
-		goji.Connect(h.Url, h.Handle)
-		goji.Connect(h.Url+"/", h.Handle)
+		goji.Connect(h.URL, h.Handle)
+		goji.Connect(h.URL+"/", h.Handle)
 	// non-HTTP 1.1
 	case "patch":
-		goji.Patch(h.Url, h.Handle)
-		goji.Patch(h.Url+"/", h.Handle)
+		goji.Patch(h.URL, h.Handle)
+		goji.Patch(h.URL+"/", h.Handle)
 	default:
 		return errors.New("unsupported method")
 	}

@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 )
 
-func OutWriter(out chan string, w http.ResponseWriter, exit chan int) {
+func OutWriter(out chan string, w io.Writer, exit chan int) {
 	f, flushable := w.(http.Flusher)
 
 	for s := range out {

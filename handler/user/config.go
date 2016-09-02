@@ -12,11 +12,11 @@ var Handlers = handler.Handlers{
 	handler.Handler{
 		Name:        "user",
 		Method:      "get",
-		Url:         baseURL,
+		URL:         baseURL,
 		Description: "retrieve user name and picture",
 		Handle:      userHandler},
 	handler.Handler{
 		Method:      "put",
-		Url:         baseURL,
+		URL:         baseURL,
 		Description: "create or update user entry",
 		Handle:      updateUserHandler}}

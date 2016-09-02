@@ -13,7 +13,7 @@ var CommonHandlers = Handlers{
 	Handler{
 		Name:        "API reference",
 		Method:      "get",
-		Url:         config.APIURL,
+		URL:         config.APIURL,
 		Description: "print the API reference",
 		Handle:      getHandler}}
 
@@ -39,7 +39,7 @@ func toHTMLTable(hs Handlers) string {
 			format = "<tr><td><b>%s<b></td><td><tt>[%s]</tt></td><td><font color=\"blue\"><b><tt>%s</tt></b></color></td></tr><tr><td></td><td colspan=\"2\"><i>%s</i></td></tr>"
 		}
 		html += fmt.Sprintf(format,
-			h.Name, strings.ToUpper(h.Method), h.Url, h.Description)
+			h.Name, strings.ToUpper(h.Method), h.URL, h.Description)
 	}
 	return html
 }

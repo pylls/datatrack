@@ -12,6 +12,6 @@ var Handlers = handler.Handlers{
 	handler.Handler{
 		Name:        "Google Takeout",
 		Method:      "post",
-		Url:         baseURL,
+		URL:         baseURL,
 		Description: "adds the data from a Google Takeout (zip file)",
 		Handle:      takeoutHandler}}

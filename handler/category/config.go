@@ -13,6 +13,6 @@ var Handlers = handler.Handlers{
 	handler.Handler{
 		Name:        "attribute type categories",
 		Method:      "get",
-		Url:         baseURL + withCategory,
+		URL:         baseURL + withCategory,
 		Description: "retrieve all types belonging to a (sub)category",
 		Handle:      categoryHandler}}

@@ -21,22 +21,22 @@ var Handlers = handler.Handlers{
 	handler.Handler{
 		Name:   "coordinate attributes in a specific area",
 		Method: "get",
-		Url:    baseURL + coordURL,
+		URL:    baseURL + coordURL,
 		Handle: getCoordinates(false)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + coordURL + config.CountURL,
+		URL:    baseURL + coordURL + config.CountURL,
 		Handle: getCoordinates(false, count)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + coordURL + config.RangeURL,
+		URL:    baseURL + coordURL + config.RangeURL,
 		Handle: getCoordinates(false, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + coordURL + config.ChronologicalURL,
+		URL:    baseURL + coordURL + config.ChronologicalURL,
 		Handle: getCoordinates(true)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + coordURL + config.ChronologicalURL + config.RangeURL,
+		URL:    baseURL + coordURL + config.ChronologicalURL + config.RangeURL,
 		Handle: getCoordinates(true, subset)},
 }

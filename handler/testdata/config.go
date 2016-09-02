@@ -13,19 +13,19 @@ var Handlers = handler.Handlers{
 	handler.Handler{
 		Name:        "insert test data for Adbokis",
 		Method:      "get",
-		Url:         baseAdbokis,
+		URL:         baseAdbokis,
 		Description: "resets the database and inserts test data for adbokis",
 		Handle:      getHandler("adbokis.json")},
 	handler.Handler{
 		Name:        "insert standard test data",
 		Method:      "get",
-		Url:         baseTestdata,
+		URL:         baseTestdata,
 		Description: "resets the database and inserts standard test data",
 		Handle:      getHandler("standard.json")},
 	handler.Handler{
 		Name:        "insert test data from local file",
 		Method:      "get",
-		Url:         baseTestdata + "/:f",
+		URL:         baseTestdata + "/:f",
 		Description: "resets the database and inserts test data from provided local file",
 		Handle:      getHandler("")},
 }

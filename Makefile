@@ -14,6 +14,9 @@ distclean: clean
 	rm -rf ./bin/
 	rm -rf ./datatrack.db
 
+linter:
+	gometalinter ./... --deadline=600s --exclude=vendor  --tests
+
 cross:
 	env GOOS=windows GOARCH=amd64 go build -o bin/datatrack.win64.exe main.go
 	env GOOS=darwin GOARCH=amd64 go build -o bin/datatrack.darwin64 main.go

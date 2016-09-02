@@ -38,136 +38,136 @@ var Handlers = handler.Handlers{
 	handler.Handler{
 		Name:   "local disclosure data",
 		Method: "get",
-		Url:    baseURL,
+		URL:    baseURL,
 		Handle: disclosureHandler(disclosure)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + config.CountURL,
+		URL:    baseURL + config.CountURL,
 		Handle: disclosureHandler(disclosure, count)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + config.RangeURL,
+		URL:    baseURL + config.RangeURL,
 		Handle: disclosureHandler(disclosure, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + config.ChronologicalURL,
+		URL:    baseURL + config.ChronologicalURL,
 		Handle: disclosureHandler(disclosureChrono)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + config.ChronologicalURL + config.ReverseURL,
+		URL:    baseURL + config.ChronologicalURL + config.ReverseURL,
 		Handle: disclosureHandler(disclosureChrono, reverse)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + config.ChronologicalURL + config.RangeURL,
+		URL:    baseURL + config.ChronologicalURL + config.RangeURL,
 		Handle: disclosureHandler(disclosureChrono, subset)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + config.ChronologicalURL + config.ReverseURL + config.RangeURL,
+		URL:         baseURL + config.ChronologicalURL + config.ReverseURL + config.RangeURL,
 		Description: "retrieve all data disclosure ids",
 		Handle:      disclosureHandler(disclosureChrono, reverse, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + organizationURL,
+		URL:    baseURL + organizationURL,
 		Handle: disclosureHandler(organization)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + organizationURL + config.CountURL,
+		URL:    baseURL + organizationURL + config.CountURL,
 		Handle: disclosureHandler(organization, count)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + organizationURL + config.RangeURL,
+		URL:    baseURL + organizationURL + config.RangeURL,
 		Handle: disclosureHandler(organization, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + organizationURL + config.ChronologicalURL,
+		URL:    baseURL + organizationURL + config.ChronologicalURL,
 		Handle: disclosureHandler(organizationChrono)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + organizationURL + config.ChronologicalURL + config.ReverseURL,
+		URL:    baseURL + organizationURL + config.ChronologicalURL + config.ReverseURL,
 		Handle: disclosureHandler(organizationChrono, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + organizationURL + config.ChronologicalURL + config.RangeURL,
+		URL:    baseURL + organizationURL + config.ChronologicalURL + config.RangeURL,
 		Handle: disclosureHandler(organizationChrono, subset)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + organizationURL + config.ChronologicalURL + config.ReverseURL + config.RangeURL,
+		URL:         baseURL + organizationURL + config.ChronologicalURL + config.ReverseURL + config.RangeURL,
 		Description: "retrieve all data disclosure ids of disclosure to :organizationId",
 		Handle:      disclosureHandler(organizationChrono, reverse, subset)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + withID,
+		URL:         baseURL + withID,
 		Description: "retrieve data disclosure",
 		Handle:      detailsHandler},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + attributeURL,
+		URL:    baseURL + withID + attributeURL,
 		Handle: disclosureHandler(attribute)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + attributeURL + config.CountURL,
+		URL:    baseURL + withID + attributeURL + config.CountURL,
 		Handle: disclosureHandler(attribute, count)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + withID + attributeURL + config.RangeURL,
+		URL:         baseURL + withID + attributeURL + config.RangeURL,
 		Description: "retrieve all attribute ids of the data disclosure",
 		Handle:      disclosureHandler(attribute, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + config.ImplicitURL,
+		URL:    baseURL + withID + config.ImplicitURL,
 		Handle: disclosureHandler(implicit)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + config.ImplicitURL + config.CountURL,
+		URL:    baseURL + withID + config.ImplicitURL + config.CountURL,
 		Handle: disclosureHandler(implicit, count)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + config.ImplicitURL + config.RangeURL,
+		URL:    baseURL + withID + config.ImplicitURL + config.RangeURL,
 		Handle: disclosureHandler(implicit, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + config.ImplicitURL + config.ChronologicalURL,
+		URL:    baseURL + withID + config.ImplicitURL + config.ChronologicalURL,
 		Handle: disclosureHandler(implicitChrono)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + config.ImplicitURL + config.ChronologicalURL + config.ReverseURL,
+		URL:    baseURL + withID + config.ImplicitURL + config.ChronologicalURL + config.ReverseURL,
 		Handle: disclosureHandler(implicitChrono, reverse)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + config.ImplicitURL + config.ChronologicalURL + config.RangeURL,
+		URL:    baseURL + withID + config.ImplicitURL + config.ChronologicalURL + config.RangeURL,
 		Handle: disclosureHandler(implicitChrono, subset)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + withID + config.ImplicitURL + config.ChronologicalURL + config.ReverseURL + config.RangeURL,
+		URL:         baseURL + withID + config.ImplicitURL + config.ChronologicalURL + config.ReverseURL + config.RangeURL,
 		Description: "retrieve all implicit data disclosure ids",
 		Handle:      disclosureHandler(implicitChrono, reverse, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + downstreamURL,
+		URL:    baseURL + withID + downstreamURL,
 		Handle: disclosureHandler(downstream)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + downstreamURL + config.CountURL,
+		URL:    baseURL + withID + downstreamURL + config.CountURL,
 		Handle: disclosureHandler(downstream, count)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + downstreamURL + config.RangeURL,
+		URL:    baseURL + withID + downstreamURL + config.RangeURL,
 		Handle: disclosureHandler(downstream, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + downstreamURL + config.ChronologicalURL,
+		URL:    baseURL + withID + downstreamURL + config.ChronologicalURL,
 		Handle: disclosureHandler(downstreamChrono)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + downstreamURL + config.ChronologicalURL + config.ReverseURL,
+		URL:    baseURL + withID + downstreamURL + config.ChronologicalURL + config.ReverseURL,
 		Handle: disclosureHandler(downstreamChrono, subset)},
 	handler.Handler{
 		Method: "get",
-		Url:    baseURL + withID + downstreamURL + config.ChronologicalURL + config.RangeURL,
+		URL:    baseURL + withID + downstreamURL + config.ChronologicalURL + config.RangeURL,
 		Handle: disclosureHandler(downstreamChrono, subset)},
 	handler.Handler{
 		Method:      "get",
-		Url:         baseURL + withID + downstreamURL + config.ChronologicalURL + config.ReverseURL + config.RangeURL,
+		URL:         baseURL + withID + downstreamURL + config.ChronologicalURL + config.ReverseURL + config.RangeURL,
 		Description: "retrieve all downstream data disclosure ids",
 		Handle:      disclosureHandler(downstreamChrono, reverse, subset)},
 }

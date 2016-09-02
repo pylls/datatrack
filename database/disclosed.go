@@ -189,7 +189,7 @@ func GetImplicitlyDisclosedAttributeIDs() (IDs []string, err error) {
 				return err
 			}
 
-			// the list lists disclosure IDs the atrtribute has been disclosed to
+			// the list lists disclosure IDs the attribute has been disclosed to
 			for i := 0; i < len(list); i++ {
 				// get the disclosure and determine if implicit or not
 				raw := ephemeral.Decrypt(d.Get([]byte(list[i])))
@@ -206,7 +206,7 @@ func GetImplicitlyDisclosedAttributeIDs() (IDs []string, err error) {
 				// in the model, sent to self -> implicit
 				if strings.EqualFold(disc.Sender, disc.Recipient) {
 					result := make([]byte, len(k))
-					copy(result, []byte(k))
+					copy(result, k)
 					IDs = append(IDs, string(result))
 				}
 			}
