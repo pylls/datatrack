@@ -72,9 +72,9 @@ func testCoreAttribute(t *testing.T) {
 		t.Fatalf("unexpected number of attribute IDs, expected %d, got %d", 1, len(IDs))
 	}
 	for _, id := range IDs {
-		att, err := GetAttribute(id)
-		if err != nil {
-			t.Fatalf("failed to get attribute: %s", err)
+		att, errr := GetAttribute(id)
+		if errr != nil {
+			t.Fatalf("failed to get attribute: %s", errr)
 		}
 		if attr.Name != att.Name {
 			t.Fatalf("invalid attribute name, expected %s, got %s", attr.Name, att.Name)
@@ -96,9 +96,9 @@ func testCoreAttribute(t *testing.T) {
 		t.Fatalf("unexpected number of attribute IDs, expected %d, got %d", 2, len(IDs))
 	}
 	for _, id := range IDs {
-		att, err := GetAttribute(id)
-		if err != nil {
-			t.Fatalf("failed to get attribute: %s", err)
+		att, errr := GetAttribute(id)
+		if errr != nil {
+			t.Fatalf("failed to get attribute: %s", errr)
 		}
 		if attr.Name != att.Name {
 			t.Fatalf("invalid attribute name, expected %s, got %s", attr.Name, att.Name)
@@ -149,9 +149,9 @@ func testCoreOrganization(t *testing.T) {
 		t.Fatalf("unexpected number of organization IDs, expected %d, got %d", 1, len(IDs))
 	}
 	for _, id := range IDs {
-		org, err := GetOrganization(id)
-		if err != nil {
-			t.Fatalf("failed to get organization: %s", err)
+		org, errr := GetOrganization(id)
+		if errr != nil {
+			t.Fatalf("failed to get organization: %s", errr)
 		}
 		if org.Name != "Facebook" {
 			t.Fatalf("invalid organization name, expected %s, got %s", "Facebook", org.Name)
@@ -202,9 +202,9 @@ func testCoreDisclosure(t *testing.T) {
 		t.Fatalf("unexpected number of disclosure IDs, expected %d, got %d", 1, len(IDs))
 	}
 	for _, id := range IDs {
-		d, err := GetDisclosure(id)
-		if err != nil {
-			t.Fatalf("failed to get disclosre: %s", err)
+		d, errr := GetDisclosure(id)
+		if errr != nil {
+			t.Fatalf("failed to get disclosre: %s", errr)
 		}
 		if d.Sender != disc.Sender {
 			t.Fatalf("invalid disclosure name, expected %s, got %s", disc.Sender, d.Sender)
@@ -605,18 +605,20 @@ func testCoordinates(t *testing.T) {
 	}
 
 	// we add two more coordinate outside our area of interest
-	cords = append(cords, model.MakeCoordinate("60.418665021112984", "13.525060272216797", "2", "2"))
-	cords = append(cords, model.MakeCoordinate("59.418665021112984", "14.525060272216797", "3", "3"))
+	cords[0] = model.MakeCoordinate("60.418665021112984",
+		"13.525060272216797", "2", "2")
+	cords[1] = model.MakeCoordinate("59.418665021112984",
+		"14.525060272216797", "3", "3")
 
 	// Adding the coordinates make the test fail
-	// wg = new(sync.WaitGroup)
-	// wg.Add(1)
-	// errChan = make(chan error, 1)
-	// AddCoordinates(cords, wg, errChan)
-	// close(errChan)
-	// for err := range errChan {
-	// 	t.Fatalf("failed to add coordinates: %s", err)
-	// }
+	wg = new(sync.WaitGroup)
+	wg.Add(1)
+	errChan = make(chan error, 1)
+	AddCoordinates(cords, wg, errChan)
+	close(errChan)
+	for err := range errChan {
+		t.Fatalf("failed to add coordinates: %s", err)
+	}
 
 	reply, err = GetCoordinates(neLat, neLng, swLat, swLng)
 	if err != nil {

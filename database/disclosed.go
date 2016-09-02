@@ -126,9 +126,9 @@ func GetExplicitlyDisclosedAttributeIDs() (IDs []string, err error) {
 		// each key has an attribute list
 		seen := make(map[string]bool)
 		err = b.ForEach(func(k, v []byte) error {
-			list, err := getList(string(k), b)
-			if err != nil {
-				return err
+			list, errr := getList(string(k), b)
+			if errr != nil {
+				return errr
 			}
 
 			// the list lists disclosure IDs the atrtribute has been disclosed to
