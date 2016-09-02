@@ -40,13 +40,13 @@ EU FP7 research project [A4Cloud](http://www.a4cloud.eu/), grant agreement no.
 317550.
 
 ## Build from source
-Install [Go](https://golang.org). Clone this repo and make it your `$GOPATH`:
+Install [Go](https://golang.org). Go get this repo:
 
-    $ git clone https://github.com/pylls/datatrack
+    $ go get github.com/pylls/datatrack
 
 Then build:
 
-    $ go build -o bin/datatrack datatrack/server
+    $ go build -o bin/datatrack main.go
 
 Run the Data Track:
 
