@@ -1,0 +1,103 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "l9+wM59LSdpfCvpn+BpibErIhAI=",
+			"path": "github.com/albrow/forms",
+			"revision": "3bcdc95a03346a911abe2b540418696adb1451e3",
+			"revisionTime": "2015-11-05T00:07:02Z"
+		},
+		{
+			"checksumSHA1": "UUSFMO+e2AZtmvzXMI++nsVa4MY=",
+			"path": "github.com/boltdb/bolt",
+			"revision": "ec58b76ba0e6b190fed15db6911036a5760d2145",
+			"revisionTime": "2016-08-31T22:25:56Z"
+		},
+		{
+			"checksumSHA1": "i0pE/2FOUQ/HR4ANwqBPt4/Sb1I=",
+			"path": "github.com/goji/param",
+			"revision": "0b4aa9fcd96f890c0ae685fc425d85b80a7bed52",
+			"revisionTime": "2016-06-01T18:41:19Z"
+		},
+		{
+			"checksumSHA1": "rmRybNo7xbSUOynk9+PbH2sL1Fs=",
+			"path": "github.com/kelseyhightower/envconfig",
+			"revision": "1e291572dcb9ba673cdcdb15e0f422702415ebaf",
+			"revisionTime": "2016-08-19T16:58:30Z"
+		},
+		{
+			"checksumSHA1": "UAPVWpPbcnFi6yrR6ykG4zbaIVU=",
+			"path": "github.com/toqueteos/webbrowser",
+			"revision": "0969d270fd0a4dbcff060e8d6a80c07c8f885a27",
+			"revisionTime": "2016-07-26T16:44:50Z"
+		},
+		{
+			"checksumSHA1": "SCg+jT1UtvZ6+R16a/aksHqR0r4=",
+			"path": "github.com/unrolled/secure",
+			"revision": "d5066f34d7f68604108df6b0eebc32afefb61aaa",
+			"revisionTime": "2016-08-30T16:58:02Z"
+		},
+		{
+			"checksumSHA1": "a3MwvEHFIkfvx/fRcE2eDni9Fdw=",
+			"path": "github.com/zenazn/goji",
+			"revision": "4d7077956293261309684d3cf1af673f773c6819",
+			"revisionTime": "2016-08-23T03:05:49Z"
+		},
+		{
+			"checksumSHA1": "RABh3uU3DiTqwRACwdnGdp5mrjU=",
+			"path": "github.com/zenazn/goji/bind",
+			"revision": "4d7077956293261309684d3cf1af673f773c6819",
+			"revisionTime": "2016-08-23T03:05:49Z"
+		},
+		{
+			"checksumSHA1": "VlmqBl1j3cULPU18lMBXNf+IHY8=",
+			"path": "github.com/zenazn/goji/graceful",
+			"revision": "4d7077956293261309684d3cf1af673f773c6819",
+			"revisionTime": "2016-08-23T03:05:49Z"
+		},
+		{
+			"checksumSHA1": "caN0mgXEzfd0w9rhUsppkUUUCns=",
+			"path": "github.com/zenazn/goji/graceful/listener",
+			"revision": "4d7077956293261309684d3cf1af673f773c6819",
+			"revisionTime": "2016-08-23T03:05:49Z"
+		},
+		{
+			"checksumSHA1": "2D1oFW10TM4Rhvza5qwyZ1F39ZI=",
+			"path": "github.com/zenazn/goji/web",
+			"revision": "4d7077956293261309684d3cf1af673f773c6819",
+			"revisionTime": "2016-08-23T03:05:49Z"
+		},
+		{
+			"checksumSHA1": "6rHgrhLBfPQ8+CZwH0tnVV8843k=",
+			"path": "github.com/zenazn/goji/web/middleware",
+			"revision": "4d7077956293261309684d3cf1af673f773c6819",
+			"revisionTime": "2016-08-23T03:05:49Z"
+		},
+		{
+			"checksumSHA1": "g9hmnkrmD9/3bVFYssjA1mu+r2o=",
+			"path": "github.com/zenazn/goji/web/mutil",
+			"revision": "4d7077956293261309684d3cf1af673f773c6819",
+			"revisionTime": "2016-08-23T03:05:49Z"
+		},
+		{
+			"checksumSHA1": "vqc3a+oTUGX8PmD0TS+qQ7gmN8I=",
+			"path": "golang.org/x/net/html",
+			"revision": "7394c112eae4dba7e96bfcfe738e6373d61772b4",
+			"revisionTime": "2016-08-19T20:57:39Z"
+		},
+		{
+			"checksumSHA1": "00eQaGynDYrv3tL+C7l9xH0IDZg=",
+			"path": "golang.org/x/net/html/atom",
+			"revision": "7394c112eae4dba7e96bfcfe738e6373d61772b4",
+			"revisionTime": "2016-08-19T20:57:39Z"
+		},
+		{
+			"checksumSHA1": "15doxxBfOxOhWExkxjPNo6Y7fEw=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "833a04a10549a95dc34458c195cbad61bbb6cb4d",
+			"revisionTime": "2015-12-11T01:34:15Z"
+		}
+	],
+	"rootPath": "github.com/pylls/datatrack"
+}
