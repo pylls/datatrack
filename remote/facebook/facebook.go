@@ -27,7 +27,21 @@ var org = model.Organization{
 
 const ProfilePicName string = "profile-facebook.jpg"
 
-// parses a Facebook data file in zip format.
+const (
+	SecScan = iota
+	SecHeader
+	SecAccountActivity
+	SecItem
+	SecItemMeta
+	SecLoginProtection
+	SecProtectionItem
+	SecIP
+	SecLocation
+	SecIPMeta
+	SecLocationMeta
+)
+
+// ParseDataZip parses a Facebook data file in zip format.
 func ParseDataZip(reader io.Reader) (err error) {
 	file, err := ioutil.TempFile("", "facebookdata")
 	if err != nil {
@@ -141,56 +155,32 @@ func SaveProfilePic(reader io.Reader) (out ReadFunOutput, err error) {
 	}
 	err = ioutil.WriteFile(config.StaticPath+"/img/"+ProfilePicName,
 		contents, 0644)
-	if err != nil {
-		return out, err
-	}
-	return out, nil
+
+	return out, err
 }
 
 func CheckAttrPresent(z *html.Tokenizer, key string, value string) bool {
-	k, v, hasnext := z.TagAttr()
-	for hasnext && string(k) != key {
-		k, v, hasnext = z.TagAttr()
+	k, v, hasNext := z.TagAttr()
+	for hasNext && string(k) != key {
+		k, v, hasNext = z.TagAttr()
 	}
 	return string(k) == key && string(v) == value
 }
 
-const (
-	SecScan = iota
-	SecHeader
-	SecAccountActivity
-	SecItem
-	SecItemMeta
-	SecLoginProtection
-	SecProtectionItem
-	SecIP
-	SecLocation
-	SecIPMeta
-	SecLocationMeta
-)
-
-type LatLong struct {
-	Latitude  float64
-	Longitude float64
-}
-type ActDate struct {
-	Act       string
-	Date      time.Time
-	UserAgent string
-}
-type IPAddr string
-
 // Save the locations and IPs you accessed Facebook from and when you did so
 func ReadSecurity(reader io.Reader) (out ReadFunOutput, err error) {
+	var (
+		curAct     ActDate
+		curIP      IPAddr
+		curLatLong LatLong
+	)
+
 	z := html.NewTokenizer(reader)
 	state := SecScan
 
-	ip_creation := make(map[time.Time]IPAddr)
-	location_creation := make(map[time.Time]LatLong)
+	ipCreation := make(map[time.Time]IPAddr)
+	locationCreation := make(map[time.Time]LatLong)
 	activities := make(map[IPAddr][]ActDate) // map IP to activities
-	var cur_act ActDate
-	var cur_ip IPAddr
-	var cur_latlong LatLong
 outer:
 	for {
 		tt := z.Next()
@@ -200,15 +190,15 @@ outer:
 			// End of the document, we're done
 			break outer
 		case html.StartTagToken:
-			tag_, hasattrs := z.TagName()
-			tag := string(tag_)
+			bTag, hasAttr := z.TagName()
+			tag := string(bTag)
 			if state == SecScan && tag == "h2" {
 				state = SecHeader
 			} else if state == SecAccountActivity && tag == "li" {
 				state = SecItem
 			} else if state == SecLoginProtection && tag == "li" {
 				state = SecProtectionItem
-			} else if hasattrs && tag == "p" &&
+			} else if hasAttr && tag == "p" &&
 				CheckAttrPresent(z, "class", "meta") {
 				switch state {
 				case SecItem:
@@ -220,12 +210,12 @@ outer:
 				}
 			}
 		case html.EndTagToken:
-			tag_, _ := z.TagName()
-			tag := string(tag_)
+			bTag, _ := z.TagName()
+			tag := string(bTag)
 			if tag == "p" {
 				if state == SecItemMeta {
 					state = SecAccountActivity
-					activities[cur_ip] = append(activities[cur_ip], cur_act)
+					activities[curIP] = append(activities[curIP], curAct)
 				} else if state == SecIPMeta || state == SecLocationMeta {
 					state = SecProtectionItem
 				}
@@ -242,31 +232,31 @@ outer:
 					state = SecLoginProtection
 				}
 			case SecItem:
-				cur_act.Act = text
+				curAct.Act = text
 			case SecItemMeta:
 				date, err := time.Parse(
 					"Monday, 2 January 2006 at 15:04 UTC-07", text)
 				if err == nil {
-					cur_act.Date = date
+					curAct.Date = date
 					break
 				}
 				if strings.HasPrefix(text, "IP Address: ") {
-					cur_ip = IPAddr(strings.TrimPrefix(string(text), "IP Address: "))
+					curIP = IPAddr(strings.TrimPrefix(string(text), "IP Address: "))
 				} else if strings.HasPrefix(text, "Browser: ") {
-					cur_act.UserAgent = strings.TrimPrefix(text, "Browser: ")
+					curAct.UserAgent = strings.TrimPrefix(text, "Browser: ")
 				}
 			case SecProtectionItem:
 				if strings.HasPrefix(text, "IP Address: ") {
-					cur_ip = IPAddr(strings.TrimPrefix(string(text), "IP Address: "))
+					curIP = IPAddr(strings.TrimPrefix(string(text), "IP Address: "))
 					state = SecIP
 				} else if strings.HasPrefix(text, "Estimated location inferred from IP: ") {
 					c := strings.Split(strings.TrimPrefix(text,
 						"Estimated location inferred from IP: "), ", ")
-					cur_latlong.Latitude, err = strconv.ParseFloat(c[0], 64)
+					curLatLong.Latitude, err = strconv.ParseFloat(c[0], 64)
 					if err != nil {
 						return out, err
 					}
-					cur_latlong.Longitude, err = strconv.ParseFloat(c[1], 64)
+					curLatLong.Longitude, err = strconv.ParseFloat(c[1], 64)
 					if err != nil {
 						return out, err
 					}
@@ -293,23 +283,23 @@ outer:
 						return out, err
 					}
 					if state == SecLocationMeta {
-						location_creation[date] = cur_latlong
+						locationCreation[date] = curLatLong
 					} else {
-						ip_creation[date] = cur_ip
+						ipCreation[date] = curIP
 					}
 				}
 			}
 		}
 	}
-	for date, ip := range ip_creation {
+	for date, ip := range ipCreation {
 		var attrs []model.Attribute
 		a, err := model.MakeAttribute("IP Address", "flag-checkered", string(ip))
 		if err != nil {
 			return out, err
 		}
 		attrs = append(attrs, a)
-		_, acts_ok := activities[ip]
-		if acts_ok {
+
+		if _, actsOk := activities[ip]; actsOk {
 			for _, action := range activities[ip] {
 				a, err := model.MakeAttribute(action.Act, "gear",
 					action.Date.Format("2 Jan 2006 at 15:04 UTC-07")+"; "+action.UserAgent)
@@ -325,32 +315,32 @@ outer:
 		unixTimestamp := date.Unix() + int64(offset)
 		disclosure, err := model.MakeDisclosure(database.Self, org.ID,
 			// unixTimestamp is in seconds, we need milliseconds
-			strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
+			strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "") // ignored error !
 
 		out.disclosures = append(out.disclosures, disclosure)
-		latlong, loc_ok := location_creation[date]
-		if loc_ok {
+
+		if latLong, locOk := locationCreation[date]; locOk {
 			self_disclosure, err := model.MakeDisclosure(org.ID, org.ID,
 				// unixTimestamp is in seconds, we need milliseconds
 				strconv.FormatInt(unixTimestamp*1000, 10), "", "", "", "")
 			out.disclosures = append(out.disclosures, self_disclosure)
 
-			coord_attr, err := model.MakeAttribute("Coordinates", "map-marker",
-				fmt.Sprintf("%f, %f", latlong.Latitude, latlong.Longitude))
+			coordAttr, err := model.MakeAttribute("Coordinates", "map-marker",
+				fmt.Sprintf("%f, %f", latLong.Latitude, latLong.Longitude))
 			if err != nil {
 				return out, err
 			}
-			out.attributes = append(out.attributes, coord_attr)
+			out.attributes = append(out.attributes, coordAttr)
 
 			out.coordinates = append(out.coordinates,
-				model.MakeCoordinate(fmt.Sprintf("%f", latlong.Latitude),
-					fmt.Sprintf("%f", latlong.Longitude),
+				model.MakeCoordinate(fmt.Sprintf("%f", latLong.Latitude),
+					fmt.Sprintf("%f", latLong.Longitude),
 					self_disclosure.ID, self_disclosure.Timestamp))
-			disclosed_downstream := model.Disclosed{
+			disclosedDownstream := model.Disclosed{
 				Disclosure: self_disclosure.ID,
-				Attribute:  []string{coord_attr.ID},
+				Attribute:  []string{coordAttr.ID},
 			}
-			out.discloseds = append(out.discloseds, disclosed_downstream)
+			out.discloseds = append(out.discloseds, disclosedDownstream)
 
 			out.downstreams = append(out.downstreams, model.Downstream{
 				Origin: disclosure.ID,
@@ -359,13 +349,13 @@ outer:
 
 		}
 
-		var attributes_s []string
+		var attributesS []string
 		for _, a := range attrs {
-			attributes_s = append(attributes_s, a.ID)
+			attributesS = append(attributesS, a.ID)
 		}
 		disclosed := model.Disclosed{
 			Disclosure: disclosure.ID,
-			Attribute:  attributes_s,
+			Attribute:  attributesS,
 		}
 		out.discloseds = append(out.discloseds, disclosed)
 	}

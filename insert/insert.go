@@ -10,19 +10,17 @@ import (
 
 // DoInsert performs an insert.
 func DoInsert(ins *model.Insert) (err error) {
-	err = database.SetUser(ins.User)
-	if err != nil {
+	if err = database.SetUser(ins.User); err != nil {
 		return
 	}
 
 	for _, disc := range ins.Disclosures {
-		err = addActionDisclose(disc, "")
-		if err != nil {
+		if err = addActionDisclose(disc, ""); err != nil {
 			return
 		}
 	}
 
-	return nil
+	return
 }
 
 func addActionDisclose(action model.ActionDisclose, originID string) (err error) {
@@ -36,8 +34,7 @@ func addActionDisclose(action model.ActionDisclose, originID string) (err error)
 		if err != nil {
 			return err
 		}
-		err = database.AddAttribute(a)
-		if err != nil {
+		if err = database.AddAttribute(a); err != nil {
 			return err
 		}
 		attributeIDs = append(attributeIDs, a.ID)
@@ -47,42 +44,38 @@ func addActionDisclose(action model.ActionDisclose, originID string) (err error)
 	if len(originID) == 0 && len(action.Sender.ID) == 0 {
 		senderID = database.Self
 	} else {
-		err = addOrUseOrg(action.Sender)
-		if err != nil {
+		if err = addOrUseOrg(action.Sender); err != nil {
 			return
 		}
 		senderID = action.Sender.ID
 	}
 
 	// add recipient
-	err = addOrUseOrg(action.Recipient)
-	if err != nil {
+	if err = addOrUseOrg(action.Recipient); err != nil {
 		return
 	}
 
 	// add disclosure
-	thetime := time.Now().String()
+	t := time.Now().String()
 	if len(action.Disclosure.Timestamp) > 0 {
-		thetime = action.Disclosure.Timestamp
+		t = action.Disclosure.Timestamp
 	}
 	// we use make to derive our own identifier
-	disc, err := model.MakeDisclosure(senderID, action.Recipient.ID, thetime,
+	disc, err := model.MakeDisclosure(senderID, action.Recipient.ID, t,
 		action.Disclosure.PrivacyPolicyHuman, action.Disclosure.PrivacyPolicyMachine,
 		action.Disclosure.DataLocation, action.Disclosure.API)
 	if err != nil {
 		return
 	}
-	err = database.AddDisclosure(disc)
-	if err != nil {
+	if err = database.AddDisclosure(disc); err != nil {
 		return
 	}
 
 	// add disclosed (link between attributes and disclosure)
-	err = database.AddDisclosed(model.Disclosed{
+	if err = database.AddDisclosed(model.Disclosed{
 		Disclosure: disc.ID,
 		Attribute:  attributeIDs,
-	})
-	if err != nil {
+	}); err != nil {
 		return
 	}
 
@@ -92,29 +85,28 @@ func addActionDisclose(action model.ActionDisclose, originID string) (err error)
 			Origin: originID,
 			Result: disc.ID,
 		})
+		return
 	}
 
 	// deal with downstream
 	for _, down := range action.Downstream {
-		err = addActionDisclose(down, disc.ID)
-		if err != nil {
+		if err = addActionDisclose(down, disc.ID); err != nil {
 			return
 		}
 	}
 
-	return nil
+	return
 }
 
 // addOrUseOrg adds on organization if unknown, otherwise
 func addOrUseOrg(org model.Organization) (err error) {
-	if len(org.Name) == 0 {
-		_, err = database.GetOrganization(org.ID)
-		if err != nil {
-			if err.Error() == database.NoSuchOrgError {
-				return database.AddOrganization(org)
-			}
-		}
-		return // already exists or error to forward
+	if len(org.Name) != 0 {
+		return database.AddOrganization(org)
 	}
-	return database.AddOrganization(org)
+	if _, err = database.GetOrganization(org.ID); err != nil {
+		if err.Error() == database.NoSuchOrgError {
+			return database.AddOrganization(org)
+		}
+	}
+	return // already exists or error to forward
 }

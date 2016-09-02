@@ -20,14 +20,15 @@ const (
 // Save the earliest and latest time you spoke with a user
 func createReadMessages(usernameChan chan string) readFun {
 	return func(reader io.Reader) (out ReadFunOutput, err error) {
+		var currentNames []string
+
 		z := html.NewTokenizer(reader)
 		state := msgScan
-		user_name := <-usernameChan
+		userName := <-usernameChan
 
-		first_msg := make(map[string]time.Time)
-		last_msg := make(map[string]time.Time)
-		num_msg := make(map[string]int64)
-		var current_names []string
+		firstMsg := make(map[string]time.Time)
+		lastMsg := make(map[string]time.Time)
+		numMsg := make(map[string]int64)
 	outer:
 		for {
 			tt := z.Next()
@@ -38,9 +39,9 @@ func createReadMessages(usernameChan chan string) readFun {
 				break outer
 			case html.StartTagToken:
 				if state == msgScan {
-					tag_, hasattrs := z.TagName()
-					tag := string(tag_)
-					if hasattrs {
+					bTag, hasAttr := z.TagName()
+					tag := string(bTag)
+					if hasAttr {
 						if tag == "div" {
 							if CheckAttrPresent(z, "class", "thread") {
 								state = msgThread
@@ -57,25 +58,25 @@ func createReadMessages(usernameChan chan string) readFun {
 				case msgThread:
 					state = msgScan
 					names := strings.Split(string(z.Text()), ", ")
-					current_names = nil
-					contains_user_name := false
+					currentNames = nil
+					containsUserName := false
 					for _, n := range names {
-						if n == user_name {
-							contains_user_name = true
+						if n == userName {
+							containsUserName = true
 						} else {
-							current_names = append(current_names, n)
+							currentNames = append(currentNames, n)
 						}
 					}
-					if !contains_user_name {
-						current_names = nil
+					if !containsUserName {
+						currentNames = nil
 					}
-					for _, n := range current_names {
-						if _, ok := first_msg[n]; !ok {
+					for _, n := range currentNames {
+						if _, ok := firstMsg[n]; !ok {
 							// last possible time
-							first_msg[n] = time.Now()
+							firstMsg[n] = time.Now()
 							// first possible time
-							last_msg[n] = time.Time{}
-							num_msg[n] = 0
+							lastMsg[n] = time.Time{}
+							numMsg[n] = 0
 						}
 					}
 				case msgTimestamp:
@@ -85,14 +86,14 @@ func createReadMessages(usernameChan chan string) readFun {
 					if err != nil {
 						return out, err
 					}
-					for _, n := range current_names {
-						if date.Before(first_msg[n]) {
-							first_msg[n] = date
+					for _, n := range currentNames {
+						if date.Before(firstMsg[n]) {
+							firstMsg[n] = date
 						}
-						if date.After(last_msg[n]) {
-							last_msg[n] = date
+						if date.After(lastMsg[n]) {
+							lastMsg[n] = date
 						}
-						num_msg[n]++
+						numMsg[n]++
 					}
 				}
 			}
@@ -102,7 +103,7 @@ func createReadMessages(usernameChan chan string) readFun {
 			}
 		}
 
-		for name, date := range last_msg {
+		for name, date := range lastMsg {
 			_, offset := date.Zone()
 			unixTimestamp := date.Unix() + int64(offset)
 			disclosure, err := model.MakeDisclosure(database.Self, org.ID,
@@ -114,7 +115,7 @@ func createReadMessages(usernameChan chan string) readFun {
 			out.disclosures = append(out.disclosures, disclosure)
 
 			first, err := model.MakeAttribute("First Message", "comments-o",
-				first_msg[name].Format("2 Jan 2006 at 15:04 UTC-07"))
+				firstMsg[name].Format("2 Jan 2006 at 15:04 UTC-07"))
 			if err != nil {
 				return out, err
 			}
@@ -127,15 +128,15 @@ func createReadMessages(usernameChan chan string) readFun {
 			if err != nil {
 				return out, err
 			}
-			nmsg, err := model.MakeAttribute("Number of Messages", "comments-o",
-				strconv.FormatInt(num_msg[name], 10))
+			nMsg, err := model.MakeAttribute("Number of Messages", "comments-o",
+				strconv.FormatInt(numMsg[name], 10))
 			if err != nil {
 				return out, err
 			}
-			out.attributes = append(out.attributes, first, last, user, nmsg)
+			out.attributes = append(out.attributes, first, last, user, nMsg)
 			disclosed := model.Disclosed{
 				Disclosure: disclosure.ID,
-				Attribute:  []string{user.ID, nmsg.ID, first.ID, last.ID},
+				Attribute:  []string{user.ID, nMsg.ID, first.ID, last.ID},
 			}
 			out.discloseds = append(out.discloseds, disclosed)
 		}

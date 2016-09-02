@@ -5,9 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"golang.org/x/net/html"
-
 	"github.com/pylls/datatrack/model"
+	"golang.org/x/net/html"
 )
 
 const (
@@ -29,14 +28,14 @@ func createReadAds(disclosureChan chan string) readFun {
 				// End of the document, we're done
 				break outer
 			case html.StartTagToken:
-				tag_, _ := z.TagName()
-				tag := string(tag_)
+				bTag, _ := z.TagName()
+				tag := string(bTag)
 				if state == adsScanning && tag == "h2" {
 					state = adsHeader
 				}
 			case html.EndTagToken:
-				tag_, _ := z.TagName()
-				tag := string(tag_)
+				bTag, _ := z.TagName()
+				tag := string(bTag)
 				if tag == "ul" {
 					state = adsScanning
 				}
@@ -69,13 +68,13 @@ func createReadAds(disclosureChan chan string) readFun {
 		}
 		out.disclosures = append(out.disclosures, disclosure)
 
-		var attributes_s []string
+		var attributesS []string
 		for _, a := range out.attributes {
-			attributes_s = append(attributes_s, a.ID)
+			attributesS = append(attributesS, a.ID)
 		}
 		disclosed := model.Disclosed{
 			Disclosure: disclosure.ID,
-			Attribute:  attributes_s,
+			Attribute:  attributesS,
 		}
 		out.discloseds = append(out.discloseds, disclosed)
 

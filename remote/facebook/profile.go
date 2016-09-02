@@ -22,11 +22,14 @@ const (
 
 func createReadIndex(usernameChan chan string, disclosureChan chan string) readFun {
 	return func(reader io.Reader) (out ReadFunOutput, err error) {
+		var (
+			header        string
+			data          = make([]string, 0)
+			unixTimestamp int64
+		)
+
 		z := html.NewTokenizer(reader)
 		state := Scanning
-		var header string
-		var data = make([]string, 0)
-		var unixTimestamp int64
 	outer:
 		for {
 			tt := z.Next()
@@ -37,8 +40,8 @@ func createReadIndex(usernameChan chan string, disclosureChan chan string) readF
 				break outer
 			case html.StartTagToken:
 				if state == Scanning {
-					tag_, hasattrs := z.TagName()
-					tag := string(tag_)
+					bTag, hasAttr := z.TagName()
+					tag := string(bTag)
 					switch tag {
 					case "h1":
 						state = SName
@@ -49,7 +52,7 @@ func createReadIndex(usernameChan chan string, disclosureChan chan string) readF
 						state = SData
 						data = data[:0]
 					case "div":
-						if hasattrs {
+						if hasAttr {
 							key, value, _ := z.TagAttr()
 							if string(key) == "class" && string(value) == "footer" {
 								state = SParseDate
@@ -58,8 +61,8 @@ func createReadIndex(usernameChan chan string, disclosureChan chan string) readF
 					}
 				}
 			case html.EndTagToken:
-				tag_, _ := z.TagName()
-				tag := string(tag_)
+				bTag, _ := z.TagName()
+				tag := string(bTag)
 				if state == SName && tag == "h1" {
 					state = Scanning
 				} else if state == SHeader && tag == "th" {
@@ -118,13 +121,13 @@ func createReadIndex(usernameChan chan string, disclosureChan chan string) readF
 		disclosureChan <- disclosure.ID
 		close(disclosureChan)
 
-		var attributes_s []string
+		var attributesS []string
 		for _, a := range out.attributes {
-			attributes_s = append(attributes_s, a.ID)
+			attributesS = append(attributesS, a.ID)
 		}
 		disclosed := model.Disclosed{
 			Disclosure: disclosure.ID,
-			Attribute:  attributes_s,
+			Attribute:  attributesS,
 		}
 		out.discloseds = append(out.discloseds, disclosed)
 		return out, nil
