@@ -8,8 +8,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/marcelfarres/datatrack/database"
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/database"
+	"github.com/pylls/datatrack/model"
 )
 
 var org = model.Organization{

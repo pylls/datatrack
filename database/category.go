@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/boltdb/bolt"
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/model"
 )
 
 // AddCategory adds a category to the database.

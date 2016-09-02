@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/marcelfarres/datatrack/config"
+	"github.com/pylls/datatrack/config"
 	"github.com/zenazn/goji/web"
 )
 

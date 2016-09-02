@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/model"
 )
 
 // AddDownstream adds a downstream relationship.

@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/model"
 	"golang.org/x/net/html"
 )
 

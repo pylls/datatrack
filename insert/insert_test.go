@@ -7,9 +7,9 @@ import (
 
 	"github.com/boltdb/bolt"
 
-	"github.com/marcelfarres/datatrack/database"
-	"github.com/marcelfarres/datatrack/ephemeral"
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/database"
+	"github.com/pylls/datatrack/ephemeral"
+	"github.com/pylls/datatrack/model"
 )
 
 func TestDoInsert(t *testing.T) {

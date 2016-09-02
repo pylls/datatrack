@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/marcelfarres/datatrack/config"
-	"github.com/marcelfarres/datatrack/handler"
+	"github.com/pylls/datatrack/config"
+	"github.com/pylls/datatrack/handler"
 )
 
 const baseURL = config.APIURL + "/user"

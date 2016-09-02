@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/albrow/forms"
-	"github.com/marcelfarres/datatrack/database"
-	"github.com/marcelfarres/datatrack/model"
-	"github.com/marcelfarres/datatrack/remote/google"
+	"github.com/pylls/datatrack/database"
+	"github.com/pylls/datatrack/model"
+	"github.com/pylls/datatrack/remote/google"
 	"github.com/zenazn/goji/web"
 )
 

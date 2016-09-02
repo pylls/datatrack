@@ -8,9 +8,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/marcelfarres/datatrack/database"
-	"github.com/marcelfarres/datatrack/insert"
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/database"
+	"github.com/pylls/datatrack/insert"
+	"github.com/pylls/datatrack/model"
 	"github.com/zenazn/goji/web"
 )
 

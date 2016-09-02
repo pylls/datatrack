@@ -9,8 +9,8 @@ import (
 
 	"github.com/boltdb/bolt"
 
-	"github.com/marcelfarres/datatrack/ephemeral"
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/ephemeral"
+	"github.com/pylls/datatrack/model"
 )
 
 func TestBoltDatabase(t *testing.T) {

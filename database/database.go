@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 
 	"github.com/boltdb/bolt"
-	"github.com/marcelfarres/datatrack/ephemeral"
+	"github.com/pylls/datatrack/ephemeral"
 )
 
 // DB is our database presumably created somewhere else.

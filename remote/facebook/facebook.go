@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/marcelfarres/datatrack/config"
-	"github.com/marcelfarres/datatrack/database"
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/config"
+	"github.com/pylls/datatrack/database"
+	"github.com/pylls/datatrack/model"
 	"golang.org/x/net/html"
 )
 

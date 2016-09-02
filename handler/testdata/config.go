@@ -1,8 +1,8 @@
 package testdata
 
 import (
-	"github.com/marcelfarres/datatrack/config"
-	"github.com/marcelfarres/datatrack/handler"
+	"github.com/pylls/datatrack/config"
+	"github.com/pylls/datatrack/handler"
 )
 
 const baseAdbokis = config.APIURL + "/testadbokis"

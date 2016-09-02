@@ -9,8 +9,8 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-	"github.com/marcelfarres/datatrack/ephemeral"
-	"github.com/marcelfarres/datatrack/model"
+	"github.com/pylls/datatrack/ephemeral"
+	"github.com/pylls/datatrack/model"
 )
 
 // AddAttribute adds an attribute to the database.

@@ -1,11 +1,11 @@
 package local
 
 import (
-	"github.com/marcelfarres/datatrack/handler"
-	"github.com/marcelfarres/datatrack/handler/local/attribute"
-	"github.com/marcelfarres/datatrack/handler/local/coordinate"
-	"github.com/marcelfarres/datatrack/handler/local/disclosure"
-	"github.com/marcelfarres/datatrack/handler/local/organization"
+	"github.com/pylls/datatrack/handler"
+	"github.com/pylls/datatrack/handler/local/attribute"
+	"github.com/pylls/datatrack/handler/local/coordinate"
+	"github.com/pylls/datatrack/handler/local/disclosure"
+	"github.com/pylls/datatrack/handler/local/organization"
 )
 
 // Handlers are handlers.

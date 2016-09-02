@@ -18,7 +18,7 @@ or use the provided `takeout example.zip` file.
 data created by the Data Track will be destroyed.
 
 ## Download
-See [releases](https://github.com/marcelfarres/datatrack/releases).
+See [releases](https://github.com/pylls/datatrack/releases).
 
 ## Privacy and the Data Track
 Please note that the Data Track is a tool you run on your own device (Windows 10,
@@ -42,7 +42,7 @@ EU FP7 research project [A4Cloud](http://www.a4cloud.eu/), grant agreement no.
 ## Build from source
 Install [Go](https://golang.org). Clone this repo and make it your `$GOPATH`:
 
-    $ git clone https://github.com/marcelfarres/datatrack
+    $ git clone https://github.com/pylls/datatrack
 
 Then build:
 
