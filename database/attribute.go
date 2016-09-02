@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-
 	"github.com/pylls/datatrack/ephemeral"
 	"github.com/pylls/datatrack/model"
 )
@@ -81,12 +80,10 @@ func AddAttributes(as []model.Attribute, wg *sync.WaitGroup, errChan chan error)
 		for _, a := range as {
 			encoded := new(bytes.Buffer)
 			enc := gob.NewEncoder(encoded)
-			err = enc.Encode(a)
-			if err != nil {
+			if err = enc.Encode(a); err != nil {
 				return err
 			}
-			err = ab.Put([]byte(a.ID), ephemeral.Encrypt(encoded.Bytes()))
-			if err != nil {
+			if err = ab.Put([]byte(a.ID), ephemeral.Encrypt(encoded.Bytes())); err != nil {
 				return err
 			}
 
@@ -130,11 +127,7 @@ func GetAttribute(id string) (a *model.Attribute, err error) {
 		a = new(model.Attribute)
 		encoded := bytes.NewBuffer(raw)
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(a)
-		if err != nil {
-			return err
-		}
-		return nil
+		return dec.Decode(a)
 	})
 	return
 }
@@ -257,12 +250,12 @@ func GetAttributeTypeIDs() (IDs []string, err error) {
 		if b == nil {
 			return errors.New("no attribute map bucket")
 		}
-		themap, err := getMap("type2id", b)
+		m, err := getMap("type2id", b)
 		if err != nil {
 			return err
 		}
 
-		for id := range themap {
+		for id := range m {
 			result := make([]byte, len(id))
 			copy(result, []byte(id))
 			IDs = append(IDs, string(result))
@@ -281,12 +274,12 @@ func GetAttributeTypeValues(thetype string) (values []string, err error) {
 		if b == nil {
 			return errors.New("no attribute map bucket")
 		}
-		themap, err := getMap("type2value", b)
+		m, err := getMap("type2value", b)
 		if err != nil {
 			return err
 		}
 
-		val, exists := themap[thetype]
+		val, exists := m[thetype]
 		if !exists {
 			return errors.New("no such values")
 		}
@@ -340,17 +333,17 @@ func GetExplicitlyDisclosedAttributeTypeValues(thetype string) (values []string,
 	}
 
 	// find the type, abuse map for tracking unique IDs
-	valuesmap := make(map[string]bool)
+	m := make(map[string]bool)
 	for _, id := range workIDs {
 		attr, err := GetAttribute(id)
 		if err != nil {
 			return values, err
 		}
-		valuesmap[attr.Value] = true
+		m[attr.Value] = true
 	}
 
-	for v := range valuesmap {
-		values = append(values, v)
+	for k := range m {
+		values = append(values, k)
 	}
 	return
 }
@@ -393,19 +386,19 @@ func GetImplicitlyDisclosedAttributeTypeValues(thetype string) (values []string,
 	}
 
 	// find the values, abuse map for tracking unique IDs
-	valuesmap := make(map[string]bool)
+	m := make(map[string]bool)
 	for _, id := range workIDs {
 		attr, err := GetAttribute(id)
 		if err != nil {
 			return values, err
 		}
 		if attr.Type == thetype {
-			valuesmap[attr.Value] = true
+			m[attr.Value] = true
 		}
 	}
 
-	for v := range valuesmap {
-		values = append(values, v)
+	for k := range m {
+		values = append(values, k)
 	}
 	return
 }
@@ -447,19 +440,19 @@ func GetAttributeTypeValuesToOrg(org string, thetype string) (values []string, e
 	}
 
 	// find the type, abuse map for tracking unique IDs
-	valuesmap := make(map[string]bool)
+	m := make(map[string]bool)
 	for _, id := range workIDs {
 		attr, err := GetAttribute(id)
 		if err != nil {
 			return values, err
 		}
 		if strings.EqualFold(thetype, attr.Type) {
-			valuesmap[attr.Value] = true
+			m[attr.Value] = true
 		}
 	}
 
-	for v := range valuesmap {
-		values = append(values, v)
+	for k := range m {
+		values = append(values, k)
 	}
 	return
 }
@@ -502,17 +495,17 @@ func GetExplicitlyDisclosedAttributeTypeValuesToOrg(org string, thetype string) 
 	}
 
 	// find the value, abuse map for tracking unique IDs
-	valuesmap := make(map[string]bool)
+	m := make(map[string]bool)
 	for _, id := range workIDs {
 		attr, err := GetAttribute(id)
 		if err != nil {
 			return values, err
 		}
-		valuesmap[attr.Value] = true
+		m[attr.Value] = true
 	}
 
-	for v := range valuesmap {
-		values = append(values, v)
+	for k := range m {
+		values = append(values, k)
 	}
 	return
 }
@@ -555,19 +548,19 @@ func GetImplicitlyDisclosedAttributeTypeValuesToOrg(org, thetype string) (values
 	}
 
 	// find the type, abuse map for tracking unique IDs
-	valuesmap := make(map[string]bool)
+	m := make(map[string]bool)
 	for _, id := range workIDs {
 		attr, err := GetAttribute(id)
 		if err != nil {
 			return values, err
 		}
 		if attr.Type == thetype {
-			valuesmap[attr.Value] = true
+			m[attr.Value] = true
 		}
 	}
 
-	for v := range valuesmap {
-		values = append(values, v)
+	for k := range m {
+		values = append(values, k)
 	}
 	return
 }

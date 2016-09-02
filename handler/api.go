@@ -23,13 +23,13 @@ func getHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 	html += "<title>API reference</title>"
 	html += "</head><body>"
 	html += "<table>"
-	html += toHtmlTable(activeHandlers)
+	html += toHTMLTable(activeHandlers)
 	html += "</table>"
 	html += "</body></html>"
 	fmt.Fprintf(w, "%s", html)
 }
 
-func toHtmlTable(hs Handlers) string {
+func toHTMLTable(hs Handlers) string {
 	var html string
 	for _, h := range hs {
 		var format string

@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-
 	"github.com/pylls/datatrack/model"
 )
 
@@ -21,17 +20,12 @@ func AddDownstream(d model.Downstream) (err error) {
 		}
 
 		// origin -> result
-		err = appendValueInList(d.Result, d.Origin, origin)
-		if err != nil {
+		if err = appendValueInList(d.Result, d.Origin, origin); err != nil {
 			return err
 		}
 
 		// result -> origin
-		err = appendValueInList(d.Origin, d.Result, result)
-		if err != nil {
-			return err
-		}
-		return nil
+		return appendValueInList(d.Origin, d.Result, result)
 	})
 }
 
@@ -49,16 +43,12 @@ func AddDownstreams(ds []model.Downstream, wg *sync.WaitGroup, errChan chan erro
 		}
 		for _, d := range ds {
 			// origin -> result
-			err = appendValueInList(d.Result, d.Origin, origin)
-			if err != nil {
+			if err = appendValueInList(d.Result, d.Origin, origin); err != nil {
 				return err
 			}
 
 			// result -> origin
-			err = appendValueInList(d.Origin, d.Result, result)
-			if err != nil {
-				return err
-			}
+			return appendValueInList(d.Origin, d.Result, result)
 		}
 		return nil
 	})

@@ -6,7 +6,6 @@ import (
 	"errors"
 
 	"github.com/boltdb/bolt"
-
 	"github.com/pylls/datatrack/model"
 )
 
@@ -19,8 +18,7 @@ func AddCategory(c model.Category) (err error) {
 		}
 		encoded := new(bytes.Buffer)
 		enc := gob.NewEncoder(encoded)
-		err = enc.Encode(c)
-		if err != nil {
+		if err = enc.Encode(c); err != nil {
 			return err
 		}
 
@@ -45,8 +43,7 @@ func GetCategory(id string) (c []model.Category, err error) {
 			var tmp model.Category
 			encoded := bytes.NewBuffer([]byte(list[i]))
 			dec := gob.NewDecoder(encoded)
-			err = dec.Decode(&tmp)
-			if err != nil {
+			if err = dec.Decode(&tmp); err != nil {
 				return err
 			}
 			c = append(c, tmp)

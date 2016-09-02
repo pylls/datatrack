@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 
 	"github.com/boltdb/bolt"
-
 	"github.com/pylls/datatrack/ephemeral"
 )
 
@@ -38,72 +37,57 @@ func Setup() (err error) {
 			return err
 		}
 		tx.DeleteBucket([]byte("attribute map"))
-		_, err = tx.CreateBucketIfNotExists([]byte("attribute map"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("attribute map")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("category"))
-		_, err = tx.CreateBucketIfNotExists([]byte("category"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("category")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("disclosed"))
-		_, err = tx.CreateBucketIfNotExists([]byte("disclosed"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("disclosed")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("disclosed map"))
-		_, err = tx.CreateBucketIfNotExists([]byte("disclosed map"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("disclosed map")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("disclosure"))
-		_, err = tx.CreateBucketIfNotExists([]byte("disclosure"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("disclosure")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("disclosure map"))
-		_, err = tx.CreateBucketIfNotExists([]byte("disclosure map"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("disclosure map")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("downstream origin"))
-		_, err = tx.CreateBucketIfNotExists([]byte("downstream origin"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("downstream origin")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("downstream result"))
-		_, err = tx.CreateBucketIfNotExists([]byte("downstream result"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("downstream result")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("organization"))
-		_, err = tx.CreateBucketIfNotExists([]byte("organization"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("organization")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("user"))
-		_, err = tx.CreateBucketIfNotExists([]byte("user"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("user")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("coordinate"))
-		_, err = tx.CreateBucketIfNotExists([]byte("coordinate"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("coordinate")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("coordinate time"))
-		_, err = tx.CreateBucketIfNotExists([]byte("coordinate time"))
-		if err != nil {
+		if _, err = tx.CreateBucketIfNotExists([]byte("coordinate time")); err != nil {
 			return err
 		}
 		tx.DeleteBucket([]byte("coordinate latitude"))
 		_, err = tx.CreateBucketIfNotExists([]byte("coordinate latitude"))
-		if err != nil {
-			return err
-		}
 
-		return nil
+		return err
 	})
 }
 
@@ -138,39 +122,39 @@ func getList(id string, bucket *bolt.Bucket) (list []string, err error) {
 	return
 }
 
-func appendValueInMap(key, value, mapname string, bucket *bolt.Bucket) (err error) {
-	themap, err := getMap(mapname, bucket)
+func appendValueInMap(key, value, mapName string, bucket *bolt.Bucket) (err error) {
+	m, err := getMap(mapName, bucket)
 	if err != nil {
 		return err
 	}
 
-	data, exists := themap[key]
+	data, exists := m[key]
 	if !exists {
 		data = make([]string, 0, 1)
 	}
-	themap[key] = append(data, value)
+	m[key] = append(data, value)
 
-	return writeMap(mapname, themap, bucket)
+	return writeMap(mapName, m, bucket)
 }
 
-func writeMap(mapname string, themap map[string][]string, bucket *bolt.Bucket) (err error) {
+func writeMap(mapName string, m map[string][]string, bucket *bolt.Bucket) (err error) {
 	encoded := new(bytes.Buffer)
 	enc := gob.NewEncoder(encoded)
-	err = enc.Encode(themap)
+	err = enc.Encode(m)
 	if err != nil {
 		return err
 	}
-	return bucket.Put([]byte(mapname), ephemeral.Encrypt(encoded.Bytes()))
+	return bucket.Put([]byte(mapName), ephemeral.Encrypt(encoded.Bytes()))
 }
 
-func getMap(id string, bucket *bolt.Bucket) (themap map[string][]string, err error) {
-	themap = make(map[string][]string)
+func getMap(id string, bucket *bolt.Bucket) (m map[string][]string, err error) {
+	m = make(map[string][]string)
 	raw := bucket.Get([]byte(id))
 	if raw == nil {
 		return
 	}
 	encoded := bytes.NewBuffer(ephemeral.Decrypt(raw))
 	dec := gob.NewDecoder(encoded)
-	err = dec.Decode(&themap)
+	err = dec.Decode(&m)
 	return
 }

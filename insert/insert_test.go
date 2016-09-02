@@ -14,9 +14,9 @@ import (
 
 func TestDoInsert(t *testing.T) {
 	ephemeral.Setup()
-	testfile := path.Join(os.TempDir(), "dttmptestdoinsert.db")
+	testFile := path.Join(os.TempDir(), "dttmptestdoinsert.db")
 	var err error
-	database.DB, err = bolt.Open(testfile, 0600, nil)
+	database.DB, err = bolt.Open(testFile, 0600, nil)
 	if err != nil {
 		t.Fatalf("failed to open database: %s", err)
 	}
@@ -24,7 +24,7 @@ func TestDoInsert(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to setup database: %s", err)
 	}
-	defer os.Remove(testfile)
+	defer os.Remove(testFile)
 	defer database.DB.Close()
 
 	var ins model.Insert

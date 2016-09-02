@@ -27,8 +27,7 @@ func AddOrganization(o model.Organization) (err error) {
 		if err != nil {
 			return err
 		}
-		err = db.Put([]byte(o.ID), ephemeral.Encrypt(encoded.Bytes()))
-		if err != nil {
+		if err = db.Put([]byte(o.ID), ephemeral.Encrypt(encoded.Bytes())); err != nil {
 			return err
 		}
 
@@ -51,11 +50,8 @@ func GetOrganization(id string) (org *model.Organization, err error) {
 		org = new(model.Organization)
 		encoded := bytes.NewBuffer(raw)
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(org)
-		if err != nil {
-			return err
-		}
-		return nil
+		return dec.Decode(org)
+
 	})
 	return
 }
@@ -97,7 +93,7 @@ func GetReceivingOrgIDs(attribute string) (IDs []string, err error) {
 			return err
 		}
 
-		// the list lists disclosure IDs the atttribute has been disclosed to
+		// the list lists disclosure IDs the attribute has been disclosed to
 		seen := make(map[string]bool)
 		for i := 0; i < len(list); i++ {
 			// get the disclosure
@@ -108,8 +104,7 @@ func GetReceivingOrgIDs(attribute string) (IDs []string, err error) {
 			disc := new(model.Disclosure)
 			encoded := bytes.NewBuffer(raw)
 			dec := gob.NewDecoder(encoded)
-			err = dec.Decode(disc)
-			if err != nil {
+			if err = dec.Decode(disc); err != nil {
 				return err
 			}
 			seen[disc.Recipient] = true

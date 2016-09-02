@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-
 	"github.com/pylls/datatrack/ephemeral"
 	"github.com/pylls/datatrack/model"
 )
@@ -32,11 +31,11 @@ func AddCoordinates(cs []model.Coordinate, wg *sync.WaitGroup, errChan chan erro
 		if err != nil {
 			return err
 		}
-		dbtime, err := tx.CreateBucketIfNotExists([]byte("coordinate time"))
+		dbTime, err := tx.CreateBucketIfNotExists([]byte("coordinate time"))
 		if err != nil {
 			return err
 		}
-		dblat, err := tx.CreateBucketIfNotExists([]byte("coordinate latitude"))
+		dbLat, err := tx.CreateBucketIfNotExists([]byte("coordinate latitude"))
 		if err != nil {
 			return err
 		}
@@ -46,21 +45,17 @@ func AddCoordinates(cs []model.Coordinate, wg *sync.WaitGroup, errChan chan erro
 			d.Longitude = PadCoordinate(d.Longitude)
 			encoded := new(bytes.Buffer)
 			enc := gob.NewEncoder(encoded)
-			err := enc.Encode(d)
-			if err != nil {
+			if err = enc.Encode(d); err != nil {
 				return err
 			}
 
-			err = db.Put([]byte(d.ID), ephemeral.Encrypt(encoded.Bytes()))
-			if err != nil {
+			if err = db.Put([]byte(d.ID), ephemeral.Encrypt(encoded.Bytes())); err != nil {
 				return err
 			}
-			err = dbtime.Put([]byte(d.Timestamp), []byte(d.ID))
-			if err != nil {
+			if err = dbTime.Put([]byte(d.Timestamp), []byte(d.ID)); err != nil {
 				return err
 			}
-			err = appendValueInList(d.ID, d.Latitude, dblat)
-			if err != nil {
+			if err = appendValueInList(d.ID, d.Latitude, dbLat); err != nil {
 				return err
 			}
 		}
@@ -90,8 +85,7 @@ func GetCoordinates(neLat, neLng, swLat, swLng string) (reply []model.Coordinate
 			var list []string
 			encoded := bytes.NewBuffer(ephemeral.Decrypt(v))
 			dec := gob.NewDecoder(encoded)
-			err = dec.Decode(&list)
-			if err != nil {
+			if err = dec.Decode(&list); err != nil {
 				return err
 			}
 
@@ -101,8 +95,7 @@ func GetCoordinates(neLat, neLng, swLat, swLng string) (reply []model.Coordinate
 				var cord model.Coordinate
 				encoded := bytes.NewBuffer(ephemeral.Decrypt(db.Get([]byte(value))))
 				dec := gob.NewDecoder(encoded)
-				err = dec.Decode(&cord)
-				if err != nil {
+				if err = dec.Decode(&cord); err != nil {
 					return err
 				}
 				longitude := []byte(cord.Longitude)
@@ -129,8 +122,7 @@ func GetNextCoordinateChrono(id string) (exists bool, next model.Coordinate, err
 		var cord model.Coordinate
 		encoded := bytes.NewBuffer(ephemeral.Decrypt(db.Get([]byte(id))))
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(&cord)
-		if err != nil {
+		if err = dec.Decode(&cord); err != nil {
 			return err
 		}
 
@@ -164,8 +156,7 @@ func GetPrevCoordinateChrono(id string) (exists bool, prev model.Coordinate, err
 		var cord model.Coordinate
 		encoded := bytes.NewBuffer(ephemeral.Decrypt(db.Get([]byte(id))))
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(&cord)
-		if err != nil {
+		if err = dec.Decode(&cord); err != nil {
 			return err
 		}
 

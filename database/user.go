@@ -17,8 +17,7 @@ func SetUser(u model.User) (err error) {
 			return err
 		}
 
-		err = db.Put([]byte("name"), ephemeral.Encrypt([]byte(u.Name)))
-		if err != nil {
+		if err = db.Put([]byte("name"), ephemeral.Encrypt([]byte(u.Name))); err != nil {
 			return err
 		}
 
@@ -39,7 +38,7 @@ func GetUser() (u *model.User, err error) {
 			return errors.New("no name set")
 		}
 		picture := ephemeral.Decrypt(db.Get([]byte("picture")))
-		if name == nil {
+		if picture == nil {
 			return errors.New("no picture set")
 		}
 

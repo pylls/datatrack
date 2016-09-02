@@ -19,6 +19,8 @@ type Handler struct {
 	Handle      func(web.C, http.ResponseWriter, *http.Request)
 }
 
+type Handlers []Handler
+
 func (h Handler) Register() error {
 	switch strings.ToLower(h.Method) {
 	case "options":
@@ -55,8 +57,6 @@ func (h Handler) Register() error {
 	activeHandlers = append(activeHandlers, h)
 	return nil
 }
-
-type Handlers []Handler
 
 func (hs Handlers) Register() error {
 	for _, handler := range hs {

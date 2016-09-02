@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-
 	"github.com/pylls/datatrack/ephemeral"
 	"github.com/pylls/datatrack/model"
 )
@@ -21,38 +20,29 @@ func AddDisclosure(d model.Disclosure) (err error) {
 		if err != nil {
 			return err
 		}
-		dbmap, err := tx.CreateBucketIfNotExists([]byte("disclosure map"))
+		dbMap, err := tx.CreateBucketIfNotExists([]byte("disclosure map"))
 		if err != nil {
 			return err
 		}
 		encoded := new(bytes.Buffer)
 		enc := gob.NewEncoder(encoded)
-		err = enc.Encode(d)
-		if err != nil {
+		if err = enc.Encode(d); err != nil {
 			return err
 		}
-		err = db.Put([]byte(d.ID), ephemeral.Encrypt(encoded.Bytes()))
-		if err != nil {
+		if err = db.Put([]byte(d.ID), ephemeral.Encrypt(encoded.Bytes())); err != nil {
 			return err
 		}
 
 		// update sender->id map
-		err = appendValueInMap(d.Sender, d.ID, "sender2id", dbmap)
-		if err != nil {
+		if err = appendValueInMap(d.Sender, d.ID, "sender2id", dbMap); err != nil {
 			return err
 		}
 		// update recipient->id map
-		err = appendValueInMap(d.Recipient, d.ID, "recipient2id", dbmap)
-		if err != nil {
+		if err = appendValueInMap(d.Recipient, d.ID, "recipient2id", dbMap); err != nil {
 			return err
 		}
 		// update timestamp-> id map
-		err = appendValueInMap(d.Timestamp, d.ID, "timestamp2id", dbmap)
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return appendValueInMap(d.Timestamp, d.ID, "timestamp2id", dbMap)
 	})
 }
 
@@ -74,21 +64,21 @@ func AddDisclosures(ds []model.Disclosure, wg *sync.WaitGroup, errChan chan erro
 		if err != nil {
 			return err
 		}
-		dbmap, err := tx.CreateBucketIfNotExists([]byte("disclosure map"))
+		dbMap, err := tx.CreateBucketIfNotExists([]byte("disclosure map"))
 		if err != nil {
 			return err
 		}
 
 		// read maps
-		sender2id, err := getMap("sender2id", dbmap)
+		sender2id, err := getMap("sender2id", dbMap)
 		if err != nil {
 			return err
 		}
-		recipient2id, err := getMap("recipient2id", dbmap)
+		recipient2id, err := getMap("recipient2id", dbMap)
 		if err != nil {
 			return err
 		}
-		timestamp2id, err := getMap("timestamp2id", dbmap)
+		timestamp2id, err := getMap("timestamp2id", dbMap)
 		if err != nil {
 			return err
 		}
@@ -97,12 +87,10 @@ func AddDisclosures(ds []model.Disclosure, wg *sync.WaitGroup, errChan chan erro
 		for _, d := range ds {
 			encoded := new(bytes.Buffer)
 			enc := gob.NewEncoder(encoded)
-			err = enc.Encode(d)
-			if err != nil {
+			if err = enc.Encode(d); err != nil {
 				return err
 			}
-			err = db.Put([]byte(d.ID), ephemeral.Encrypt(encoded.Bytes()))
-			if err != nil {
+			if err = db.Put([]byte(d.ID), ephemeral.Encrypt(encoded.Bytes())); err != nil {
 				return err
 			}
 
@@ -114,35 +102,26 @@ func AddDisclosures(ds []model.Disclosure, wg *sync.WaitGroup, errChan chan erro
 			sender2id[d.Sender] = append(data, d.ID)
 
 			// update recipient->id map
-			data, exists = recipient2id[d.Recipient]
-			if !exists {
+			if data, exists = recipient2id[d.Recipient]; !exists {
 				data = make([]string, 0, 1)
 			}
 			recipient2id[d.Recipient] = append(data, d.ID)
 
 			// update timestamp-> id map
-			data, exists = timestamp2id[d.Timestamp]
-			if !exists {
+			if data, exists = timestamp2id[d.Timestamp]; !exists {
 				data = make([]string, 0, 1)
 			}
 			timestamp2id[d.Timestamp] = append(data, d.ID)
 		}
 
 		// write maps
-		err = writeMap("sender2id", sender2id, dbmap)
-		if err != nil {
+		if err = writeMap("sender2id", sender2id, dbMap); err != nil {
 			return err
 		}
-		err = writeMap("recipient2id", recipient2id, dbmap)
-		if err != nil {
+		if err = writeMap("recipient2id", recipient2id, dbMap); err != nil {
 			return err
 		}
-		err = writeMap("timestamp2id", timestamp2id, dbmap)
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return writeMap("timestamp2id", timestamp2id, dbMap)
 	})
 	if err != nil {
 		errChan <- err
@@ -163,11 +142,7 @@ func GetDisclosure(id string) (d *model.Disclosure, err error) {
 		d = new(model.Disclosure)
 		encoded := bytes.NewBuffer(raw)
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(d)
-		if err != nil {
-			return err
-		}
-		return nil
+		return dec.Decode(d)
 	})
 	return
 }
@@ -242,8 +217,7 @@ func GetDisclosureIDsChrono() (IDs []string, err error) {
 		}
 		encoded := bytes.NewBuffer(raw)
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(&timestamp2id)
-		if err != nil {
+		if err = dec.Decode(&timestamp2id); err != nil {
 			return err
 		}
 
@@ -289,8 +263,7 @@ func GetDisclosureIDsToOrg(org string) (IDs []string, err error) {
 		}
 		encoded := bytes.NewBuffer(raw)
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(&recipient2id)
-		if err != nil {
+		if err = dec.Decode(&recipient2id); err != nil {
 			return err
 		}
 		list, exists := recipient2id[org]
@@ -337,8 +310,7 @@ func getPlicitlyDisclosureIDsToOrg(org string, explicit bool) (IDs []string, err
 		}
 		encoded := bytes.NewBuffer(raw)
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(&recipient2id)
-		if err != nil {
+		if err = dec.Decode(&recipient2id); err != nil {
 			return err
 		}
 		list, exists := recipient2id[org]
@@ -353,8 +325,7 @@ func getPlicitlyDisclosureIDsToOrg(org string, explicit bool) (IDs []string, err
 			disc := new(model.Disclosure)
 			encoded := bytes.NewBuffer(raw)
 			dec := gob.NewDecoder(encoded)
-			err = dec.Decode(disc)
-			if err != nil {
+			if err = dec.Decode(disc); err != nil {
 				return err
 			}
 			if explicit && !strings.EqualFold(disc.Sender, disc.Recipient) {
@@ -389,7 +360,7 @@ func GetDisclosureIDsToOrgChrono(org string) (IDs []string, err error) {
 		}
 
 		// build time -> id map
-		timemap := make(map[string][]string)
+		timeMap := make(map[string][]string)
 		for i := 0; i < len(workIDs); i++ {
 			var d model.Disclosure
 			raw := ephemeral.Decrypt(b.Get([]byte(workIDs[i])))
@@ -398,29 +369,26 @@ func GetDisclosureIDsToOrgChrono(org string) (IDs []string, err error) {
 			}
 			encoded := bytes.NewBuffer(raw)
 			dec := gob.NewDecoder(encoded)
-			err = dec.Decode(&d)
-			if err != nil {
+			if err = dec.Decode(&d); err != nil {
 				return err
 			}
-			_, exists := timemap[d.Timestamp]
+			_, exists := timeMap[d.Timestamp]
 			if !exists {
-				timemap[d.Timestamp] = make([]string, 0)
+				timeMap[d.Timestamp] = make([]string, 0)
 			}
-			timemap[d.Timestamp] = append(timemap[d.Timestamp], d.ID)
+			timeMap[d.Timestamp] = append(timeMap[d.Timestamp], d.ID)
 		}
 
 		// get only time and sort
-		timelist := make([]string, len(timemap))
-		for key := range timemap {
-			timelist = append(timelist, key)
+		timeList := make([]string, len(timeMap))
+		for key := range timeMap {
+			timeList = append(timeList, key)
 		}
-		sort.Strings(timelist)
+		sort.Strings(timeList)
 
 		// build id result after sort
-		for i := 0; i < len(timelist); i++ {
-			for _, v := range timemap[timelist[i]] {
-				IDs = append(IDs, v)
-			}
+		for i := 0; i < len(timeList); i++ {
+			IDs = append(IDs, timeMap[timeList[i]]...)
 		}
 		return nil
 	})
@@ -455,8 +423,7 @@ func GetImplicitDisclosureIDs(id string) (IDs []string, err error) {
 			d := new(model.Disclosure)
 			encoded := bytes.NewBuffer(raw)
 			dec := gob.NewDecoder(encoded)
-			err = dec.Decode(d)
-			if err != nil {
+			if err = dec.Decode(d); err != nil {
 				return err
 			}
 			if strings.EqualFold(d.Sender, d.Recipient) {
@@ -525,8 +492,7 @@ func GetDownstreamDisclosureIDs(id string) (IDs []string, err error) {
 			d := new(model.Disclosure)
 			encoded := bytes.NewBuffer(raw)
 			dec := gob.NewDecoder(encoded)
-			err = dec.Decode(d)
-			if err != nil {
+			if err = dec.Decode(d); err != nil {
 				return err
 			}
 			if !strings.EqualFold(d.Sender, d.Recipient) {

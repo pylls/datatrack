@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-
 	"github.com/pylls/datatrack/ephemeral"
 	"github.com/pylls/datatrack/model"
 )
@@ -21,26 +20,23 @@ func AddDisclosed(d model.Disclosed) (err error) {
 		if err != nil {
 			return err
 		}
-		dbmap, err := tx.CreateBucketIfNotExists([]byte("disclosed map"))
+		dbMap, err := tx.CreateBucketIfNotExists([]byte("disclosed map"))
 		if err != nil {
 			return err
 		}
 
 		encoded := new(bytes.Buffer)
 		enc := gob.NewEncoder(encoded)
-		err = enc.Encode(d)
-		if err != nil {
+		if err = enc.Encode(d); err != nil {
 			return err
 		}
-		err = db.Put([]byte(d.Disclosure), ephemeral.Encrypt(encoded.Bytes()))
-		if err != nil {
+		if err = db.Put([]byte(d.Disclosure), ephemeral.Encrypt(encoded.Bytes())); err != nil {
 			return err
 		}
 
 		// update attribute -> []disclosure
 		for i := 0; i < len(d.Attribute); i++ {
-			err = appendValueInList(d.Disclosure, d.Attribute[i], dbmap)
-			if err != nil {
+			if err = appendValueInList(d.Disclosure, d.Attribute[i], dbMap); err != nil {
 				return err
 			}
 		}
@@ -66,7 +62,7 @@ func AddDiscloseds(ds []model.Disclosed, wg *sync.WaitGroup, errChan chan error)
 		if err != nil {
 			return err
 		}
-		dbmap, err := tx.CreateBucketIfNotExists([]byte("disclosed map"))
+		dbMap, err := tx.CreateBucketIfNotExists([]byte("disclosed map"))
 		if err != nil {
 			return err
 		}
@@ -74,19 +70,16 @@ func AddDiscloseds(ds []model.Disclosed, wg *sync.WaitGroup, errChan chan error)
 		for _, d := range ds {
 			encoded := new(bytes.Buffer)
 			enc := gob.NewEncoder(encoded)
-			err = enc.Encode(d)
-			if err != nil {
+			if err = enc.Encode(d); err != nil {
 				return err
 			}
-			err = db.Put([]byte(d.Disclosure), ephemeral.Encrypt(encoded.Bytes()))
-			if err != nil {
+			if err = db.Put([]byte(d.Disclosure), ephemeral.Encrypt(encoded.Bytes())); err != nil {
 				return err
 			}
 
 			// update attribute -> []disclosure
 			for i := 0; i < len(d.Attribute); i++ {
-				err = appendValueInList(d.Disclosure, d.Attribute[i], dbmap)
-				if err != nil {
+				if err = appendValueInList(d.Disclosure, d.Attribute[i], dbMap); err != nil {
 					return err
 				}
 			}
@@ -112,11 +105,7 @@ func GetDisclosed(id string) (d *model.Disclosed, err error) {
 		d = new(model.Disclosed)
 		encoded := bytes.NewBuffer(raw)
 		dec := gob.NewDecoder(encoded)
-		err = dec.Decode(d)
-		if err != nil {
-			return err
-		}
-		return nil
+		return dec.Decode(d)
 	})
 	return
 }
@@ -152,8 +141,7 @@ func GetExplicitlyDisclosedAttributeIDs() (IDs []string, err error) {
 				disc := new(model.Disclosure)
 				encoded := bytes.NewBuffer(raw)
 				dec := gob.NewDecoder(encoded)
-				err = dec.Decode(disc)
-				if err != nil {
+				if err = dec.Decode(disc); err != nil {
 					return err
 				}
 
@@ -211,8 +199,7 @@ func GetImplicitlyDisclosedAttributeIDs() (IDs []string, err error) {
 				disc := new(model.Disclosure)
 				encoded := bytes.NewBuffer(raw)
 				dec := gob.NewDecoder(encoded)
-				err = dec.Decode(disc)
-				if err != nil {
+				if err = dec.Decode(disc); err != nil {
 					return err
 				}
 
