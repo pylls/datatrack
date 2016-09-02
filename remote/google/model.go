@@ -2,10 +2,12 @@ package google
 
 import "github.com/pylls/datatrack/model"
 
+// WatchHistory is a history of watched videos.
 type WatchHistory struct {
 	Videos []Video
 }
 
+// Video is a watched video.
 type Video struct {
 	ContentDetails ContentDetails `json:"contentDetails"`
 	ETag           string         `json:"etag"`
@@ -15,10 +17,12 @@ type Video struct {
 	Status         Status         `json:"status"`
 }
 
+// ContentDetails ahs details about a video.
 type ContentDetails struct {
 	VideoID string `json:"videoId"`
 }
 
+// Snippet is a snippet.
 type Snippet struct {
 	ChannelID    string     `json:"channelId"`
 	ChannelTitle string     `json:"channelTitle"`
@@ -31,11 +35,13 @@ type Snippet struct {
 	Title        string     `json:"title"`
 }
 
+// ResourceID is a resource.
 type ResourceID struct {
 	Kind    string `json:"kind"`
 	VideoID string `json:"videoId"`
 }
 
+// Thumbnails is a collection of thumbnails.
 type Thumbnails struct {
 	Default  Thumbnail `json:"default"`
 	High     Thumbnail `json:"high"`
@@ -44,16 +50,19 @@ type Thumbnails struct {
 	Standard Thumbnail `json:"standard"`
 }
 
+// Thumbnail is a video thumbnail.
 type Thumbnail struct {
 	Height int    `json:"height"`
 	URL    string `json:"url"`
 	Width  int    `json:"width"`
 }
 
+// Status is a privacy status.
 type Status struct {
 	PrivacyStatus string `json:"privacyStatus"`
 }
 
+// ParsedVideo is a parsed video.
 type ParsedVideo struct {
 	Disclosure model.Disclosure
 	Attributes []model.Attribute
@@ -74,7 +83,8 @@ type Location struct {
 	Velocity        int64           `json:"velocity"`
 	Heading         int             `json:"heading"`  // angle
 	Altitude        int             `json:"altitude"` // meter over sea level
-	OuterActivities []OuterActivity `json:"activities"`
+	OuterActivities []OuterActivity `json:"activitys"`
+	// NOTE: typo above for "activitys" is as-is in Google's format, do not change
 }
 
 // OuterActivity is many InnerActivity at a particular point in time.

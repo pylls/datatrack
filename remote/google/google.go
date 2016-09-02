@@ -19,7 +19,7 @@ var org = model.Organization{
 	Description: "Google Inc. is an American multinational technology company specializing in Internet-related services and products.",
 }
 
-// ParseTakeoutGzip parses a Google takeout file in tar.gz (.tgz) format.
+// ParseTakeoutGZIP parses a Google takeout file in tar.gz (.tgz) format.
 func ParseTakeoutGZIP(reader io.Reader) (err error) {
 	greader, err := gzip.NewReader(reader)
 	if err != nil {

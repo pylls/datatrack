@@ -14,7 +14,7 @@ import (
 	"github.com/pylls/datatrack/model"
 )
 
-// FromTakeout parses a history file (JSON) as inside a Google Takeout.
+// LFromTakeout parses a history file (JSON) as inside a Google Takeout.
 func LFromTakeout(historyFile io.Reader) (err error) {
 	var locationhistory LocationHistory
 	jsoncontent, err := ioutil.ReadAll(historyFile)

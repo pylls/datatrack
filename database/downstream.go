@@ -48,7 +48,9 @@ func AddDownstreams(ds []model.Downstream, wg *sync.WaitGroup, errChan chan erro
 			}
 
 			// result -> origin
-			return appendValueInList(d.Origin, d.Result, result)
+			if err = appendValueInList(d.Origin, d.Result, result); err != nil {
+				return err
+			}
 		}
 		return nil
 	})
