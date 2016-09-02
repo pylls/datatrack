@@ -10,9 +10,9 @@ doc:
 # clean:
 # 	rm -rf pkg/
 
-# distclean: clean
-# 	rm -rf bin/
-# 	rm -rf datatrack.db
+distclean: clean
+	rm -rf ./bin/
+	rm -rf ./datatrack.db
 
 cross:
 	env GOOS=windows GOARCH=amd64 go build -o bin/datatrack.win64.exe main.go
