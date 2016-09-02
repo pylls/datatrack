@@ -1,4 +1,4 @@
-package locationhistory
+package google
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 )
 
 // FromTakeout parses a history file (JSON) as inside a Google Takeout.
-func FromTakeout(historyFile io.Reader) (err error) {
+func LFromTakeout(historyFile io.Reader) (err error) {
 	var locationhistory LocationHistory
 	jsoncontent, err := ioutil.ReadAll(historyFile)
 	if err != nil {
@@ -36,7 +36,7 @@ func insertLocationHistory(history LocationHistory) (err error) {
 	// start workers, one per CPU
 	for i := 0; i < runtime.NumCPU(); i++ {
 		wg.Add(1)
-		go worker(logChan, parsedChan, wg)
+		go locWorker(logChan, parsedChan, wg)
 	}
 
 	// feed workers
@@ -91,7 +91,7 @@ func insertLocationHistory(history LocationHistory) (err error) {
 	return nil
 }
 
-func worker(locChan chan Location, parsedChan chan ParsedLocation, wg *sync.WaitGroup) {
+func locWorker(locChan chan Location, parsedChan chan ParsedLocation, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for location := range locChan {
 		parsed, err := insertLocation(location)

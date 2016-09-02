@@ -10,8 +10,6 @@ import (
 
 	"github.com/pylls/datatrack/database"
 	"github.com/pylls/datatrack/model"
-	"github.com/pylls/datatrack/remote/google/locationhistory"
-	"github.com/pylls/datatrack/remote/google/watchhistory"
 )
 
 var org = model.Organization{
@@ -22,7 +20,7 @@ var org = model.Organization{
 }
 
 // ParseTakeoutGzip parses a Google takeout file in tar.gz (.tgz) format.
-func ParseTakeoutGzip(reader io.Reader) (err error) {
+func ParseTakeoutGZIP(reader io.Reader) (err error) {
 	greader, err := gzip.NewReader(reader)
 	if err != nil {
 		return
@@ -30,15 +28,15 @@ func ParseTakeoutGzip(reader io.Reader) (err error) {
 	if err := database.AddOrganization(org); err != nil {
 		return err
 	}
-	archive := tar.NewReader(greader)
-	for h, err := archive.Next(); err == nil; h, err = archive.Next() {
+	treader := tar.NewReader(greader)
+	for h, err := treader.Next(); err == nil; h, err = treader.Next() {
 		switch h.Name {
 		case "Takeout/Location History/LocationHistory.json":
-			if err := locationhistory.FromTakeout(archive); err != nil {
+			if err := LFromTakeout(treader); err != nil {
 				return err
 			}
 		case "Takeout/YouTube/history/watch-history.json":
-			if err := watchhistory.FromTakeout(archive); err != nil {
+			if err := WFromTakeout(treader); err != nil {
 				return err
 			}
 		default:
@@ -82,7 +80,7 @@ func ParseTakeoutZip(reader io.Reader) (err error) {
 			if err != nil {
 				return err
 			}
-			if err := locationhistory.FromTakeout(reader); err != nil {
+			if err := LFromTakeout(reader); err != nil {
 				return err
 			}
 			continue
@@ -91,7 +89,7 @@ func ParseTakeoutZip(reader io.Reader) (err error) {
 			if err != nil {
 				return err
 			}
-			if err := watchhistory.FromTakeout(reader); err != nil {
+			if err := WFromTakeout(reader); err != nil {
 				return err
 			}
 			continue

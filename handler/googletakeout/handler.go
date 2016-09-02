@@ -49,7 +49,7 @@ func takeoutHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	} else if strings.HasSuffix(file.Filename, ".tgz") {
-		err = google.ParseTakeoutGzip(bytes.NewReader(data))
+		err = google.ParseTakeoutGZIP(bytes.NewReader(data))
 		if err != nil {
 			http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
 			return

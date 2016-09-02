@@ -1,4 +1,4 @@
-package watchhistory
+package google
 
 import (
 	"encoding/json"
@@ -14,8 +14,8 @@ import (
 	"github.com/pylls/datatrack/model"
 )
 
-// FromTakeout parses a history file (JSON) as inside a Google Takeout.
-func FromTakeout(historyFile io.Reader) (err error) {
+// WFromTakeout parses a history file (JSON) as inside a Google Takeout.
+func WFromTakeout(historyFile io.Reader) (err error) {
 	var watchhistory WatchHistory
 	jsoncontent, err := ioutil.ReadAll(historyFile)
 	if err != nil {
@@ -38,7 +38,7 @@ func insertWatchHistory(history WatchHistory) (err error) {
 	// start workers, one per CPU
 	for i := 0; i < runtime.NumCPU(); i++ {
 		wg.Add(1)
-		go worker(logChan, parsedChan, wg)
+		go watchWorker(logChan, parsedChan, wg)
 	}
 
 	// feed workers
@@ -82,7 +82,7 @@ func insertWatchHistory(history WatchHistory) (err error) {
 	return nil
 }
 
-func worker(locChan chan Video, parsedChan chan ParsedVideo, wg *sync.WaitGroup) {
+func watchWorker(locChan chan Video, parsedChan chan ParsedVideo, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for video := range locChan {
 		parsed, err := insertVideo(video)
@@ -123,19 +123,19 @@ func createParsedVideo(timestamp int64, video Video) (parsedVideo ParsedVideo, e
 	parsedVideo.Attributes = make([]model.Attribute, 13)
 
 	parsedVideo.Attributes[0], err = model.MakeAttribute("Video id", "camera",
-		fmt.Sprintf("%s", video.ContentDetails.VideoId))
+		fmt.Sprintf("%s", video.ContentDetails.VideoID))
 	if err != nil {
 		return
 	}
 
 	parsedVideo.Attributes[1], err = model.MakeAttribute("Etag", "tag",
-		fmt.Sprintf("%s", video.Etag))
+		fmt.Sprintf("%s", video.ETag))
 	if err != nil {
 		return
 	}
 
 	parsedVideo.Attributes[2], err = model.MakeAttribute("Id", "barcode",
-		fmt.Sprintf("%s", video.Id))
+		fmt.Sprintf("%s", video.ID))
 	if err != nil {
 		return
 	}
@@ -147,7 +147,7 @@ func createParsedVideo(timestamp int64, video Video) (parsedVideo ParsedVideo, e
 	}
 
 	parsedVideo.Attributes[4], err = model.MakeAttribute("Channel id", "barcode",
-		fmt.Sprintf("%s", video.Snippet.ChannelId))
+		fmt.Sprintf("%s", video.Snippet.ChannelID))
 	if err != nil {
 		return
 	}
@@ -165,7 +165,7 @@ func createParsedVideo(timestamp int64, video Video) (parsedVideo ParsedVideo, e
 	}
 
 	parsedVideo.Attributes[7], err = model.MakeAttribute("Playlist id", "barcode",
-		fmt.Sprintf("%s", video.Snippet.PlaylistId))
+		fmt.Sprintf("%s", video.Snippet.PlaylistID))
 	if err != nil {
 		return
 	}
@@ -183,7 +183,7 @@ func createParsedVideo(timestamp int64, video Video) (parsedVideo ParsedVideo, e
 	}
 
 	parsedVideo.Attributes[10], err = model.MakeAttribute("Kind", "filter",
-		fmt.Sprintf("%s", video.Snippet.ResourceId.Kind))
+		fmt.Sprintf("%s", video.Snippet.ResourceID.Kind))
 	if err != nil {
 		return
 	}
